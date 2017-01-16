@@ -1,0 +1,178 @@
+<html>
+
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+<title>Support Service</title>
+
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/main.css" rel="stylesheet"/>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid navbar-container">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand brand-link" href="index.html">Ticket Sale System</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div id="menuPlace">
+
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<div id="newThemeModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog attr-mod-dialog" role="document">
+        <div class="modal-content modal-header-short">
+
+            <div class="modal-header">
+                <button type="button" class="close close-buy-modal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h1 class="modal-title attr-mod-title">New question</h1>
+            </div>
+
+            <div id="modalBody" class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input class="form-control" id="inputName" placeholder="Subject">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="newMessage" class="form-control" rows="6" placeholder="Your message..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-block btn-primary btn-ft-modal" title="Ctrl+Enter">Send message</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="dialogModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog attr-mod-dialog" role="document">
+        <div class="modal-content modal-header-short">
+
+            <div class="modal-header">
+                <button type="button" class="close close-buy-modal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h1 class="modal-title attr-mod-title">New question</h1>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-message modal-question">
+                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
+                    <p>Hello! I can't buy ticket on 05.12.2016 on Ferris Wheel. Why can't I do this?</p>
+                    <span class="message-date">02.12.2016, 4:20</span>
+                </div>
+                <div class="modal-message modal-answer">
+                    <img class="img-circle message-img" src="img/identicon6.png" alt="">
+                    <p>Good morning! Which payment system did you use?</p>
+                    <span class="message-date">02.12.2016, 4:22</span>
+                </div>
+                <div class="modal-message modal-question">
+                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
+                    <p>I used PayPal.</p>
+                    <span class="message-date">02.12.2016, 5:25</span>
+                </div>
+                <div class="modal-message modal-answer">
+                    <img class="img-circle message-img" src="img/identicon6.png" alt="">
+                    <p>PayPal is currently unavailable on our site, you can use your credit card to pay. Best regards, Ticket Sale System Team.</p>
+                    <span class="message-date">02.12.2016, 5:28</span>
+                </div>
+                <div class="modal-message modal-question">
+                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
+                    <p>Thanks!</p>
+                    <span class="message-date">02.12.2016, 6:25</span>
+                </div>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="dialogMessage" class="form-control" rows="3" placeholder="Your message..."></textarea>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-block btn-primary btn-ft-modal" title="Ctrl+Enter">Send message</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container support-main">
+    <div id="display">
+
+        <h1>Support Service</h1>
+
+        <h2>Common questions</h2>
+
+        <div class="row common-questions">
+            <div class="col-md-6 col-xs-12">
+                <h3>Account related</h3>
+                <ul>
+                    <li><a tabindex="0" role="button" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="focus" data-content="On main page">Where can I buy tickets?</a></li>
+                    <li><a tabindex="0" role="button" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="focus" data-content="Calendar in cart">How can I choose date?</a></li>
+                    <li><a tabindex="0" role="button" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="focus" data-content="On settings page">How can I change my account settings?</a></li>
+                </ul>
+            </div>
+            <div class="col-md-6 col-xs-12">
+                <h3 class="pad-top-h3">Payment</h3>
+                <ul>
+                    <li><a tabindex="0" role="button" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="focus" data-content="PayPal or credit card">Which payment systems can I use?</a></li>
+                    <li><a tabindex="0" role="button" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="focus" data-content="20 hours">In what time before the visit can I book a ticket?</a></li>
+                    <li><a tabindex="0" role="button" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="focus" data-content="Orders page in menu">Where can I find my paid orders?</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="hr-sup mobile-no-display"></div>
+
+        <h2 class="mobile-no-display">If you still have unanswered questions, ask our team</h2>
+
+        <h2>(<a class="test-link">with questions</a> or <a class="test-link">without questions</a>)</h2>
+
+        <div id="questions">
+
+            <div class="questions">
+                <h3>Your questions:</h3>
+                <span>You haven't any questions now.</span> <a data-toggle="modal" data-target="#newThemeModal">Ask something!</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<footer>
+
+</footer>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/support.js"></script>
+
+</body>
+
+</html>

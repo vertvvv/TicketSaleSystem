@@ -1,0 +1,191 @@
+<html>
+
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+<title>Users Questions</title>
+
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/main.css" rel="stylesheet"/>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid navbar-container">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand brand-link" href="index.html">Ticket Sale System</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <img class="img-circle avatar-img" src="img/identicon6.png" alt="">Name Surname <span class="caret"></span></a>
+                    <ul class="dropdown-menu dropdown-menu-fix">
+                        <li><a class="inline-block-fix" href="cart.html">Shopping Cart<span class="menu-span">0</span></a></li>
+                        <li><a href="orders.html">Orders</a></li>
+                        <li><a href="settings.html">Settings</a></li>
+                        <li><a href="support.html">Technical Support</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><span class="test-span">Admin functions</span></li>
+                        <li><a href="admin_userslist.html">Users list</a></li>
+                        <li><a href="admin_attractions.html">Change attractions</a></li>
+                        <li><a href="admin_support.html">User questions</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="index.html">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<div id="dialogModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog attr-mod-dialog" role="document">
+        <div class="modal-content modal-header-short">
+
+            <div class="modal-header">
+                <button type="button" class="close close-buy-modal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h1 class="modal-title attr-mod-title">New question</h1>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-message modal-answer">
+                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
+                    <p>Hello! I can't buy ticket on 05.12.2016 on Ferris Wheel. Why can't I do this?</p>
+                    <span class="message-date">02.12.2016, 4:20</span>
+                </div>
+                <div class="modal-message modal-question">
+                    <img class="img-circle message-img" src="img/identicon6.png" alt="">
+                    <p>Good morning! Which payment system did you use?</p>
+                    <span class="message-date">02.12.2016, 4:22</span>
+                </div>
+                <div class="modal-message modal-answer">
+                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
+                    <p>I used PayPal.</p>
+                    <span class="message-date">02.12.2016, 5:25</span>
+                </div>
+                <div class="modal-message modal-question">
+                    <img class="img-circle message-img" src="img/identicon6.png" alt="">
+                    <p>PayPal is currently unavailable on our site, you can use your credit card to pay. Best regards, Ticket Sale System Team.</p>
+                    <span class="message-date">02.12.2016, 5:28</span>
+                </div>
+                <div class="modal-message modal-answer">
+                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
+                    <p>Thanks!</p>
+                    <span class="message-date">02.12.2016, 6:25</span>
+                </div>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <textarea id="dialogMessage" class="form-control" rows="3" placeholder="Your message..."></textarea>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+                <button title="Ctrl+Enter" type="button" class="btn btn-block btn-primary btn-ft-modal">Send message</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container support-main">
+    <div id="display">
+
+        <h1>User questions</h1>
+
+        <div id="questions">
+
+            <div class="admin-questions">
+
+                <div class="admin-question-container row">
+                    <div class="col-md-2 col-xs-12 vcenter">
+                        <img class="img-thumbnail img-thumbnail-small" src="img/identicon.png">
+                    </div>
+                    <div class="col-md-3 col-xs-12 vcenter user-name">
+                        Vasya Allo
+                    </div>
+                    <div class="col-md-4 col-xs-12 vcenter">
+                        <a data-toggle="modal" data-target="#dialogModal">About terms</a>
+                    </div>
+                    <div class="col-md-2 col-xs-8 vcenter">
+                        <button class="btn btn-block btn-danger admin-close-question">Close</button>
+                    </div>
+                </div>
+                <div class="admin-question-container row">
+                    <div class="col-md-2 col-xs-12 vcenter">
+                        <img class="img-thumbnail img-thumbnail-small" src="img/identicon.png">
+                    </div>
+                    <div class="col-md-3 col-xs-12 vcenter user-name">
+                        Vasya Allo
+                    </div>
+                    <div class="col-md-4 col-xs-12 vcenter">
+                        <a data-toggle="modal" data-target="#dialogModal">About payment</a>
+                    </div>
+                    <div class="col-md-2 col-xs-8 vcenter">
+                        <button class="btn btn-block btn-danger admin-close-question">Close</button>
+                    </div>
+                </div>
+                <div class="admin-question-container row">
+                    <div class="col-md-2 col-xs-12 vcenter">
+                        <img class="img-thumbnail img-thumbnail-small" src="img/identicon5.png">
+                    </div>
+                    <div class="col-md-3 col-xs-12 vcenter user-name">
+                        Tolya Vzakone
+                    </div>
+                    <div class="col-md-4 col-xs-12 vcenter">
+                        <a data-toggle="modal" data-target="#dialogModal">About terms</a>
+                    </div>
+                    <div class="col-md-2 col-xs-8 vcenter">
+                        <button class="btn btn-block btn-danger admin-close-question">Close</button>
+                    </div>
+                </div>
+                <div class="admin-question-container row">
+                    <div class="col-md-2 col-xs-12 vcenter">
+                        <img class="img-thumbnail img-thumbnail-small" src="img/identicon2.png">
+                    </div>
+                    <div class="col-md-3 col-xs-12 vcenter user-name">
+                        Allah Akbar
+                    </div>
+                    <div class="col-md-4 col-xs-12 vcenter">
+                        <a data-toggle="modal" data-target="#dialogModal">About bicycles</a>
+                    </div>
+                    <div class="col-md-2 col-xs-8 vcenter">
+                        <button class="btn btn-block btn-danger admin-close-question">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<footer>
+
+</footer>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/admin.js"></script>
+
+</body>
+
+</html>
