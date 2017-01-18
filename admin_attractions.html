@@ -28,25 +28,9 @@
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <img class="img-circle avatar-img" src="img/identicon6.png" alt="">Name Surname <span class="caret"></span></a>
-                    <ul class="dropdown-menu dropdown-menu-fix">
-                        <li><a class="inline-block-fix" href="cart.html">Shopping Cart<span class="menu-span">0</span></a></li>
-                        <li><a href="orders.html">Orders</a></li>
-                        <li><a href="settings.html">Settings</a></li>
-                        <li><a href="support.html">Technical Support</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><span class="test-span">Admin functions</span></li>
-                        <li><a href="admin_userslist.html">Users list</a></li>
-                        <li><a href="admin_attractions.html">Change attractions</a></li>
-                        <li><a href="admin_support.html">User questions</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="index.html">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+            <div id="menuPlace">
+
+            </div>
         </div>
 
     </div>
@@ -154,21 +138,21 @@
                 </div>
                 <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                     <div class="panel-body">
-                        <form class="form-horizontal">
+                        <form id="newAttractionForm" class="form-horizontal" method="post" action="" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="inputNameNew" class="col-md-3 col-xs-3 control-label">Name</label>
                                 <div class="col-md-7 col-xs-9">
-                                    <input class="form-control" id="inputNameNew" placeholder="Name">
+                                    <input class="form-control" name="name" id="inputNameNew" placeholder="Name">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-3 col-xs-3 control-label">Description</label>
                                 <div class="col-md-7 col-xs-9">
-                                    <textarea class="form-control" id="inputDescriptionNew" rows="3" placeholder="Description"></textarea>
+                                    <textarea class="form-control" name="description" id="inputDescriptionNew" rows="3" placeholder="Description"></textarea>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputNameNew" class="col-md-3 col-xs-3 control-label">Category</label>
+                                <label for="inputCategoryNew" class="col-md-3 col-xs-3 control-label">Category</label>
                                 <div class="col-md-5 col-xs-9">
                                     <select class="form-control" id="inputCategoryNew">
                                         <option>Kids</option>
@@ -191,7 +175,7 @@
                             <div class="form-group">
                                 <label class="col-md-3 col-xs-3 control-label">Price, $</label>
                                 <div class="col-md-7 col-xs-9">
-                                    <input type="number" class="form-control" id="inputPriceNew" placeholder="Price">
+                                    <input type="number" name="price" class="form-control" id="inputPriceNew" placeholder="Price">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -209,162 +193,12 @@
                             <div class="form-group">
                                 <label class="col-md-3 col-xs-3 control-label">Image</label>
                                 <div class="col-md-7 col-xs-9 image-input">
-                                    <input type="file" id="inputFileNew">
+                                    <input name="image" type="file" id="inputFileNew">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-offset-3 col-md-7 col-xs-12">
-                                    <button type="submit" class="btn btn-block btn-primary">Add</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="headingTwo">
-                    <h4 class="panel-title">
-                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Ferris Wheel
-                        </a>
-                    </h4>
-                </div>
-                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-                    <div class="panel-body">
-                        <form class="form-horizontal">
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">ID</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <input class="form-control attr-id" disabled>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">Name</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <input class="form-control" placeholder="Name" value="Ferris Wheel">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">Description</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <textarea class="form-control" rows="3" placeholder="Description">Best attraction ever blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah</textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputNameNew" class="col-md-3 col-xs-3 control-label">Category</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <select class="form-control">
-                                        <option>Kids</option>
-                                        <option>Extreme</option>
-                                        <option>Hyper extreme</option>
-                                        <option>Over hyper extreme</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">Price, $</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <input type="number" class="form-control" placeholder="Price" value="10">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">Maintenance</label>
-                                <div class="col-md-7 col-xs-9 text-left">
-                                    <label class="radio-inline">
-                                        <input type="radio" name="inputRadio2" value="off" data-toggle="modal" data-target="#maintenanceModal"> On maintenance
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="inputRadio2" value="on" checked> Already works
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">New image</label>
-                                <div class="col-md-7 col-xs-9 image-input">
-                                    <input type="file">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-md-offset-3 col-md-5 col-xs-12">
-                                    <button type="submit" class="btn btn-block btn-primary">Change</button>
-                                </div>
-                                <div class="col-md-2 tablet-no-display">
-                                    <button type="submit" class="btn btn-block btn-danger">Delete</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="headingThree">
-                    <h4 class="panel-title">
-                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Roller-Coaster
-                        </a>
-                    </h4>
-                </div>
-                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-                    <div class="panel-body">
-                        <form class="form-horizontal">
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">ID</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <input class="form-control attr-id" disabled>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">Name</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <input class="form-control" placeholder="Name" value="Roller-Coaster">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">Description</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <textarea class="form-control" rows="3" placeholder="Description">Best attraction ever blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah blah-blah-blah</textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputNameNew" class="col-md-3 col-xs-3 control-label">Category</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <select class="form-control">
-                                        <option>Kids</option>
-                                        <option>Extreme</option>
-                                        <option>Hyper extreme</option>
-                                        <option>Over hyper extreme</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">Price, $</label>
-                                <div class="col-md-7 col-xs-9">
-                                    <input type="number" class="form-control" placeholder="Price" value="10">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">Maintenance</label>
-                                <div class="col-md-7 col-xs-9 text-left">
-                                    <label class="radio-inline">
-                                        <input type="radio" name="inputRadio3" value="off" checked data-toggle="modal" data-target="#maintenanceModal"> On maintenance
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="inputRadio3" value="on"> Already works
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-3 col-xs-3 control-label">New image</label>
-                                <div class="col-md-7 col-xs-9 image-input">
-                                    <input type="file">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-md-offset-3 col-md-5 col-xs-12">
-                                    <button type="submit" class="btn btn-block btn-primary">Change</button>
-                                </div>
-                                <div class="col-md-2 tablet-no-display">
-                                    <button type="submit" class="btn btn-block btn-danger">Delete</button>
+                                    <button id="addNewAttraction" type="button" class="btn btn-block btn-primary">Add</button>
                                 </div>
                             </div>
                         </form>
@@ -383,7 +217,7 @@
 <script type="text/javascript" src="js/jquery.printElement.js"></script>
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
-<script type="text/javascript" src="js/admin.js"></script>
+<script type="text/javascript" src="js/attractions.js"></script>
 
 </body>
 

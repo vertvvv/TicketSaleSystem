@@ -1,4 +1,3 @@
-const access_token = localStorage.getItem('access_token');
 const server = "http://localhost:8080/";
 const index_directory = "assets/index/";
 
@@ -14,19 +13,14 @@ $(function () {
     document.title += ' - Ticket Sale System';
 });
 
-function formattedMessage(mes) {
-    let splitted = mes.split("\n");
-    return splitted.join('<br>');
-}
+$('body').on('click', '#logout', () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        window.location = 'index.html';
+    });
 
-function sendOnCtrl(e) {
-    const textarea = $(e.target);
-    if (e.keyCode == 13 && e.ctrlKey) {
-        checkIfEmpty(textarea);
-    } else {
-        textarea.parent().parent().removeClass('has-error');
-        textarea.attr('placeholder', 'Your message...');
-    }
+function attractionsQuery() {
+    $.get(server + "/api/attractions", {}, loadAttractions);
 }
 
 function checkIfEmpty(textarea) {
@@ -40,13 +34,76 @@ function checkIfEmpty(textarea) {
     }
 }
 
+function formattedMessage(mes) {
+    let splitted = mes.split("\n");
+    return splitted.join('<br>');
+}
+
+function getAccountInfo() {
+    const curDate = new Date();
+    const expireDate = new Date(localStorage.getItem('expires'));
+    const access_token = localStorage.getItem('access_token');
+    console.log(access_token, '\n\ntime:', expireDate);
+    if (expireDate < curDate) {
+        refreshToken();
+    } else {
+        getInfoFromToken();
+    }
+}
+
+function getInfoFromToken() {
+    const access_token = localStorage.getItem('access_token');
+    $.get(server + "api/accounts", {
+        access_token: access_token
+    }, setProfileMenu)
+        .error((e) => {
+            console.log(e);
+            const errorStr = JSON.parse(e.responseText).error_description;
+            if (errorStr.includes('Invalid access token') || errorStr.includes('Access token expired')) {
+                refreshToken();
+            }
+        });
+}
+
 function onLoadFunction() {
+    const access_token = localStorage.getItem('access_token');
     if (access_token) {
-        $.get(server + "api/accounts", {
-            access_token: access_token
-        }, setProfileMenu);
+        getAccountInfo();
     } else {
         window.location = 'index.html';
+    }
+}
+
+function refreshToken() {
+    const refresh_token = localStorage.getItem('refresh_token');
+    $.post(server + "oauth/token", {
+        client_id: 'web',
+        client_secret: 'ticketsale',
+        grant_type: 'refresh_token',
+        refresh_token: refresh_token
+    }, setAccessToken)
+}
+
+function sendOnCtrl(e) {
+    const textarea = $(e.target);
+    if (e.keyCode == 13 && e.ctrlKey) {
+        checkIfEmpty(textarea);
+    } else {
+        textarea.parent().parent().removeClass('has-error');
+        textarea.attr('placeholder', 'Your message...');
+    }
+}
+
+function setAccessToken(info) {
+    localStorage.setItem('access_token', info.access_token);
+    localStorage.setItem('refresh_token', info.refresh_token);
+    const curDate = new Date();
+    const expireDate = curDate.addMinutes((info.expires_in-60)/60);
+    localStorage.setItem('expires', expireDate.toString());
+    if ($('.login-link').length) {
+        window.location = 'index.html'
+    } else {
+        setTimeout(() => getAccountInfo(), 100);
     }
 }
 
@@ -72,6 +129,13 @@ String.prototype.isTrueEmail = function () {
 String.prototype.isEmptyString = function () {
     const regexp = /^\s*$/;
     return regexp.test(this);
+};
+
+Date.prototype.addMinutes = function(minutes)
+{
+    const date = new Date(this.valueOf());
+    date.setMinutes(date.getMinutes() + minutes);
+    return date;
 };
 
 Date.prototype.getFormattedTime = function () {

@@ -1,13 +1,4 @@
-$('#testButton').on('click', function () {
-    $.get("http://localhost:8080//api/accounts/all", {
-                limit: 5,
-                access_token: access_token
-            }, consoleLogInfo);
-});
- 
-function consoleLogInfo(info) {
-    console.log(info);
-}
+$(onLoadFunction());
 
 $('.ban-button').on('click', function () {
     if ($(this).text() == 'Ban') {
@@ -125,11 +116,25 @@ function sendMessage() {
     dialogMessage.val('');
 }
 
-$(function () {
-    $('.user-id').each(function() {
-        $(this).text('ID: ' + randomID());
-    });
-    $('.attr-id').each(function() {
-        $(this).attr('placeholder', randomID());
-    });
+$('#testButton').on('click', function () {
+    $.get("http://localhost:8080//api/accounts/all", {
+        limit: 5,
+        access_token: access_token
+    }, consoleLogInfo);
 });
+
+$('#testButton2').on('click', function () {
+    $.postJSON(server + "api/accounts", {
+        mail: $('#login').val(),
+        password: md5($('#pass').val())
+    }, (info) => {
+        console.log('success!');
+    })
+        .error(function() {
+            console.log('error!', $('#login').val(), $('#pass').val(), md5($('#pass').val()));
+        });
+});
+
+function consoleLogInfo(info) {
+    console.log(info);
+}

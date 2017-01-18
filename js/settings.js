@@ -1,27 +1,15 @@
-function onLoadFunction() {
-    if (access_token) {
-        $.get(server + "api/accounts", {
-            access_token: access_token
-        }, (info) => {
-            setProfileMenu(info);
-            $('.input-for-load').each((i, item) => {
-                const attr = item.id.toLowerCase().substr(5);
-                if (info[attr]) {
-                    $(item).val(info[attr]);
-                }
-            });
-            if (info.firstname && info.lastname) {
-                $('#profileUserName').text(info.firstname + ' ' + info.lastname);
+function getInfoFromToken() {
+    const access_token = localStorage.getItem('access_token');
+    $.get(server + "api/accounts", {
+        access_token: access_token
+    }, setPageInfo)
+        .error((e) => {
+            console.log(e);
+            const errorStr = JSON.parse(e.responseText).error_description;
+            if (errorStr.includes('Invalid access token') || errorStr.includes('Access token expired')) {
+                refreshToken();
             }
-            if (info.birthdate) {
-                $('#profileBirthDate').text(setRightDateFormat(info.birthdate));
-            }
-            $('.img-thumbnail').attr('src', info.avatar);
-            $('#profileBirthDate').after('<p id="id-id">' + info.id + '</p>');
         });
-    } else {
-        window.location = 'index.html';
-    }
 }
 
 $(onLoadFunction());
@@ -42,12 +30,12 @@ $('#changeButton').on('click', function () {
                 sendData[attr] = value;
             }
         });
-        sendData.id = $('#id-id').text();
-        const str = 'Bearer ' + access_token;
+        const access_token = localStorage.getItem('access_token');
+        const authorization_string = 'Bearer ' + access_token;
         $.ajax({
             url: server + "api/accounts",
             headers: {
-                'Authorization': str,
+                'Authorization': authorization_string,
                 'Content-Type': 'application/json'
             },
             type: 'PUT',
@@ -91,6 +79,23 @@ $('#inputPassword').on('keyup', function () {
         $('#inputPasswordConfirm').parent().parent().removeClass('has-error');
     }
 });
+
+function setPageInfo(info) {
+    setProfileMenu(info);
+    $('.input-for-load').each((i, item) => {
+        const attr = item.id.toLowerCase().substr(5);
+        if (info[attr]) {
+            $(item).val(info[attr]);
+        }
+    });
+    if (info.firstname && info.lastname) {
+        $('#profileUserName').text(info.firstname + ' ' + info.lastname);
+    }
+    if (info.birthdate) {
+        $('#profileBirthDate').text(setRightDateFormat(info.birthdate));
+    }
+    $('.img-thumbnail').attr('src', info.avatar);
+}
 
 function setRightDateFormat(date) {
     return date.substr(8) +

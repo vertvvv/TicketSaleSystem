@@ -12,21 +12,14 @@ $(document).keypress((e) => {
    }
 });
 
-$('span.change-quant').on('click', changeQuantity);
-$('div.box').on('click', function () {
-    changeQuantity();
-    checkMaintenance($(this));
-});
-
 $('#attractionModal').on('show.bs.modal', function (event) {
-    const box = $(event.relatedTarget);
-    const name = box.data('name');
-    const quantity = box.data('quantity');
-    const id = box.attr('id');
-    const modal = $(this);
-    modal.find('.modal-title').text(name);
-    $('#ticket-counter').text(quantity);
-    $('#attrid').attr('src', 'img/' + id + '.png');
+    const attractionData = event.relatedTarget.dataset;
+    $(this).find('.modal-title').text(attractionData.name);
+    $('#attrDescription').text(attractionData.description);
+    $('#attrCategory').text(attractionData.category);
+    $('#price').data('price', attractionData.price).text(parseFloat(attractionData.price).toFixed(2));
+    $('#ticket-counter').text('1');
+    $('#attrid').attr('src', attractionData.image);
 });
 
 $('body')
@@ -36,16 +29,17 @@ $('body')
     this.text == loginText ? modalBody.load(directory + "login.html") : modalBody.load(directory + "signup.html");
     })
 
+    .on('click', 'div.box',  function () {
+        changeQuantity();
+        checkMaintenance($(this));
+    })
+
+    .on('click', 'span.change-quant',  changeQuantity)
+
     .on('click', 'a.forgot-link', function () {
         const modalBody = $('#loginBody');
         const forgotText = "Forgot Password?";
         this.text == forgotText ? modalBody.load(directory + "login_forgot_password.html") : modalBody.load(directory + "login.html");
-    })
-
-    .on('click', '#logout', () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        window.location = 'index.html';
     })
 
     .on('click', '#sendNewPass', forgotEmailCheck)
@@ -68,24 +62,14 @@ $('body')
     });
 
 $(function () {
-    $('.box').each(function () {
-        $(this).find('.box-icon').css('background-image', 'url(img/attr' + this.id.substr(4) + '.png)');
-    });
+    const access_token = localStorage.getItem('access_token');
     if (access_token) {
-        $.get(server + "api/accounts", {
-            access_token: access_token
-        }, setProfileMenu);
+        getAccountInfo();
     } else {
         $('#menuPlace').load(directory + "menu_login.html");
     }
-    console.log(access_token);
+    attractionsQuery();
 });
-
-function addAccessToken(info) {
-    localStorage.setItem('access_token', info.access_token);
-    localStorage.setItem('refresh_token', info.refresh_token);
-    window.location = 'index.html';
-}
 
 function animatePicture(btn) {
     if ($(window).width() >= 992){
@@ -157,7 +141,7 @@ function checkEmptyLoginInputs(input, pass) {
 }
 
 function checkMaintenance(box) {
-    const flag = !!(box.data('maintenance'));
+    const flag = (box.data('maintenance') == 'yes');
     const buyButton = $('.btn-footer-buy');
     $('.maintenance-text').toggleClass('no-display', !flag);
     buyButton.prop('disabled', flag);
@@ -166,15 +150,7 @@ function checkMaintenance(box) {
 function checkPasswords(login, pass1, pass2) {
     const inspect = (pass1.val() == pass2.val());
     if (inspect) {
-        $.postJSON(server + "api/accounts", {
-            mail: $(login).val(),
-            password: md5(pass1.val())
-        }, (info) => {
-            loginUser(login, pass1);
-        })
-            .error(function() {
-                console.log('error!', pass1.val(), login);
-            });
+        signUpUser(login, pass1);
     } else {
         $('.log-in-htm').after('<p class="text-warning incorrect-email-text incorrect-pass-confirm">Incorrect password confirmation</p>');
         pass1.val('');
@@ -199,6 +175,20 @@ function forgotEmailCheck() {
     }
 }
 
+function loadAttractions(data) {
+    data.forEach((attraction, i) => {
+        const mntnFlag = (attraction.maintenance) ? 'yes' : 'no';
+        const category = (attraction.category) ? attraction.category : 'Not indicated'
+        $('#main').append('<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 no-padding">'
+            + '<div class="box" id="attr' + i + '" data-toggle="modal" data-target="#attractionModal" '
+            + 'data-name="' + attraction.name + '" data-description="' + attraction.description + '" '
+            + 'data-category="' + category + '" data-price="' + attraction.price + '" '
+            + 'data-maintenance="' + mntnFlag + '" data-image="' + attraction.image + '">'
+            + '<div class="box-icon"></div><div class="box-title">' + attraction.name + '</div></div></div>');
+        $('#attr' + i).find('.box-icon').css('background-image', 'url(' + attraction.thumbnail + ')');
+    });
+}
+
 function loginUser(input, pass) {
     $.post(server + "oauth/token", {
         client_id: 'web',
@@ -206,10 +196,11 @@ function loginUser(input, pass) {
         grant_type: 'password',
         username: $(input).val(),
         password: md5($(pass).val())
-    }, addAccessToken)
+    }, setAccessToken)
         .error((e) => {
+            console.log(e);
             if (e.status == 400) {
-                throwPasswordException(input, pass);
+                throwPasswordException(input, pass, e);
             }
         });
 }
@@ -220,8 +211,21 @@ function openLoginWindow() {
     $('#openModal').modal('show');
 }
 
-function throwPasswordException(input, pass) {
-    $('.log-in-htm').after('<p class="text-warning incorrect-email-text">Incorrect Email or empty password!</p>');
+function signUpUser(login, pass) {
+    $.postJSON(server + "api/accounts", {
+        mail: $(login).val(),
+        password: md5(pass.val())
+    }, (info) => {
+        loginUser(login, pass);
+    })
+        .error(function() {
+            console.log('error!', pass.val(), login);
+        });
+}
+
+function throwPasswordException(input, pass, e=0) {
+    const errorText = (e) ? JSON.parse(e.responseText).error_description : 'Incorrect Email or empty password!';
+    $('.log-in-htm').after('<p class="text-warning incorrect-email-text">' + errorText + '</p>');
     input.val('');
     pass.val('');
     input.attr('placeholder', '');
