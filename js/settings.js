@@ -42,7 +42,7 @@ $('#changeButton').on('click', function () {
             data: JSON.stringify(sendData),
             dataType: 'json',
             success: function(data) {
-                console.log('cool!');
+                window.location = 'settings.html';
             }
         });
         console.log(sendData);
@@ -89,9 +89,12 @@ function setPageInfo(info) {
         }
     });
     if (info.firstname && info.lastname) {
-        $('#profileUserName').text(info.firstname + ' ' + info.lastname);
+        $('#profileUserName')
+            .removeClass('hidden')
+            .text(info.firstname + ' ' + info.lastname);
     }
     if (info.birthdate) {
+        $('#profileBirthDate').parent().removeClass('hidden');
         $('#profileBirthDate').text(setRightDateFormat(info.birthdate));
     }
     $('.img-thumbnail').attr('src', info.avatar);

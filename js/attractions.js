@@ -63,7 +63,7 @@ function loadAttractions(data) {
             + '<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '"'                   + ' aria-expanded="false" aria-controls="collapseTwo">' + attraction.name + '</a></h4></div>'
             + '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading' + i + '">'
             + '<div class="panel-body"><form class="form-horizontal"><div class="form-group">'
-            + '<label class="col-md-3 col-xs-3 control-label"></label><div class="col-md-7 col-xs-9">'
+            + '<label class="col-md-3 col-xs-3 control-label">ID</label><div class="col-md-7 col-xs-9">'
             + '<input class="form-control attr-id" value="' + attraction.id + '" disabled></div></div>'
             + '<div class="form-group"><label class="col-md-3 col-xs-3 control-label">Name</label>'
             + '<div class="col-md-7 col-xs-9"><input class="form-control" placeholder="Name" value="' + attraction.name + '">'

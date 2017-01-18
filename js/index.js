@@ -218,15 +218,20 @@ function signUpUser(login, pass) {
     }, (info) => {
         loginUser(login, pass);
     })
-        .error(function() {
-            console.log('error!', pass.val(), login);
+        .error(function(e) {
+            throwPasswordException(login, pass, e)
         });
 }
 
 function throwPasswordException(input, pass, e=0) {
-    const errorText = (e) ? JSON.parse(e.responseText).error_description : 'Incorrect Email or empty password!';
+    const errorText = (e) ? (JSON.parse(e.responseText).error_description)
+            ? JSON.parse(e.responseText).error_description
+            : JSON.parse(e.responseText).desc
+            : 'Incorrect Email or empty password!';
+    //const errorText = (e) ? (JSON.parse(e.responseText).error_description) : 'Incorrect Email or empty password!';
     $('.log-in-htm').after('<p class="text-warning incorrect-email-text">' + errorText + '</p>');
     input.val('');
     pass.val('');
+    $('#confirmPassSignUp').val('');
     input.attr('placeholder', '');
 }

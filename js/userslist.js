@@ -1,19 +1,36 @@
-$($.when(onLoadFunction()).done(() => setTimeout(() => usersQuery()), 200));
+$($.when(onLoadFunction()).done(() => setTimeout(() => usersQuery(), 200)));
 
 $('body')
     .on('click','.ban-button', function () {
-    if ($(this).text() == 'Ban') {
-        $(this).text('Unban')
-            .removeClass('btn-danger')
-            .addClass('btn-default')
-            .parent().siblings('.user-status').text('Banned');
-    } else {
-        $(this).text('Ban')
-            .removeClass('btn-default')
-            .addClass('btn-danger')
-            .parent().siblings('.user-status').text('Active');
-    }
-});
+        const parentElement = $(this).parent();
+        const id = parentElement.siblings('.user-id').text();
+        const access_token = '&access_token=' + localStorage.getItem('access_token');
+        let enabled = '?enabled=';
+        if ($(this).text() == 'Ban') {
+            $(this).text('Unban')
+                .removeClass('btn-danger')
+                .addClass('btn-default');
+            parentElement.siblings('.user-status').text('Banned');
+            enabled += 'false';
+        } else {
+            $(this).text('Ban')
+                .removeClass('btn-default')
+                .addClass('btn-danger')
+                .parent().siblings('.user-status').text('Active');
+            enabled += 'true';
+        }
+        const url = server + "api/accounts/" + id + enabled + access_token;
+        $.ajax({
+            url: url,
+            type: 'PUT',
+            success: function () {
+                console.log('woohoo');
+            },
+            error: function() {
+                console.log('fuck');
+            }
+        })
+    });
 
 $('.user-container-search input').each((i, item) => $(item).on('change', filterUsers));
 $('#srch-term').on('keyup', filterUsers);
@@ -45,15 +62,15 @@ function filterUsers() {
 }
 
 function loadUsers(data) {
-    console.log(data);
     const accounts = data.content;
     accounts.forEach((item) => {
-        const status = (item.enabled) ? 'Active' : 'Banned';
+        const status = (item.enabled) ? (item.admin) ? 'Admin' : 'Active' : 'Banned';
         const name = (item.firstname) ? item.firstname : 'Name';
         const surname = (item.lastname) ? item.lastname : 'Surname';
         const fullName = (name + surname === 'NameSurname')
             ? 'Not indicated' : name + ' ' + surname;
-        const banButton = (item.enabled) ? ' btn-danger">Ban' : ' btn-default">Unban';
+        const disabled = (item.admin) ? 'disabled' : '';
+        const banButton = (item.enabled) ? ' btn-danger" ' + disabled + '>Ban' : ' btn-default" ' + disabled + '>Unban';
         $('#loadInfo').after('<div class="user-container row">'
             + '<div class="col-md-1 col-xs-3 vcenter">'
             + '<img class="img-thumbnail img-thumbnail-small" '
@@ -73,8 +90,9 @@ function loadUsers(data) {
 }
 
 function usersQuery() {
-    const access_token = localStorage.getItem('access_token');
+    let access_token = localStorage.getItem('access_token');
     $.get(server + "api/accounts/all", {
         access_token: access_token
-    }, loadUsers);
+    }, loadUsers)
+        .error(() => setTimeout(() => usersQuery(), 200));
 }
