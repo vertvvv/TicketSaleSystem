@@ -1,24 +1,26 @@
 $(onLoadFunction());
 $(attractionsQuery());
+$(categoriesQuery(loadCategories, 300));
 
-// $('#addNewAttraction').on('click', () => {
-//     const fd = new FormData(document.getElementById("newAttractionForm"));
-//     const authorization_string = 'Bearer ' + access_token;
-//     $.ajax({
-//         url: server + "api/attractions?access_token=" + access_token,
-//         // headers: {
-//         //     'Accept': 'application/json'
-//         // },
-//         type: 'POST',
-//         cache: false,
-//         contentType: false,
-//         processData: false,
-//         data: fd,
-//         success: function(json){
-//             console.log(json);
-//         }
-//     });
-// });
+$('#addNewAttraction').on('click', () => {
+    const form = $('#newAttractionForm')[0];
+    const fd = new FormData(form);
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
+    const category = $('#inputCategoryNew option:selected').data('id');
+    fd.append('cat', category);
+    $.ajax({
+        url: server + "api/attractions" + authorization_string,
+        data: fd,
+        type: 'POST',
+        contentType: false,
+        processData: false,
+        success: function(json){
+            console.log('woohoo', json);
+            window.location = 'admin_attractions.html'
+        }
+    });
+});
 
 $('#maintenanceModal').on('show.bs.modal', function (event) {
     const item = $(event.relatedTarget)
@@ -29,9 +31,9 @@ $('#maintenanceModal').on('show.bs.modal', function (event) {
 });
 
 $('#addCategory').on('click', () => {
+    setCategoryOnServer();
     const selects = $('select');
     const category = $('#newCategoryName').val();
-    console.log(category);
     selects.each(function (item) {
         $(this)
             .find('option:last-of-type')
@@ -40,20 +42,90 @@ $('#addCategory').on('click', () => {
 });
 
 $('#removeCategory').on('click', function() {
-    const currentOption = $(this)
-        .parent().parent()
-        .find('select').find('option:checked');
-    const optionText = currentOption.text();
-    const selects = $('select');
-    selects.each(function (item) {
-        const options = $(this).find('option');
-        options.each(function (option) {
-            if ($(this).text() == optionText) {
-                $(this).remove();
-            }
+    categoriesQuery(deleteCategoryOnServer);
+    setTimeout(() => {
+        const currentOption = $(this)
+            .parent().parent()
+            .find('select').find('option:checked');
+        const optionText = currentOption.text();
+        const selects = $('select');
+        selects.each(function (item) {
+            const options = $(this).find('option');
+            options.each(function (option) {
+                if ($(this).text() == optionText) {
+                    $(this).remove();
+                }
+            });
+        });
+
+    }, 200);
+});
+
+$('body')
+    .on('click', '.btn-change-attr', function() {
+        const form = $(this).parent().parent().parent();
+        const fd = new FormData(form[0]);
+        const id = form.find('.attr-id').val();
+        const access_token = localStorage.getItem('access_token');
+        const authorization_string = '?access_token=' + access_token;
+        const category = form.find('.category-select option:selected').data('id');
+        fd.append('cat', category);
+        $.ajax({
+            url: server + "api/attractions/" + id + authorization_string,
+            data: fd,
+            type: 'PUT',
+            contentType: false,
+            processData: false,
+            success: function(json){
+                console.log('woohoo', json);
+            },
+            error: (e) => console.log(e)
+        });
+    })
+
+    .on('click', '.btn-delete-attr', function() {
+        const form = $(this).parent().parent().parent();
+        const id = form.find('.attr-id').val();
+        const access_token = localStorage.getItem('access_token');
+        const authorization_string = '?access_token=' + access_token;
+        $.ajax({
+            url: server + "api/attractions/" + id + authorization_string,
+            type: 'DELETE',
+            success: function(json){
+                console.log('woohoo', json);
+                window.location = 'admin_attractions.html'
+            },
+            error: (e) => console.log(e)
         });
     });
-});
+
+function categoriesQuery(callback, delay = 0) {
+    $.get(server + "/api/attractions/cat", {}, (data) => setTimeout(() => callback(data), delay));
+}
+
+function deleteCategoryOnServer(data) {
+    const result = $.grep(data, (item) => item.name == $('#inputCategoryNew').find('option:checked').text());
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
+    $.ajax({
+        url: server + "/api/attractions/cat/" + result[0].id + authorization_string,
+        type: 'DELETE',
+        success: function(json){
+            console.log('woohoo');
+        },
+        error: function (e) {
+            console.log('fuck', e);
+        }
+    });
+}
+
+function loadCategories(data) {
+    data.forEach((category, i) => {
+        $('select').each((i, item) => {
+            $(item).append('<option data-id="' + category.id + '">' + category.name + '</option>')
+        })
+    });
+}
 
 function loadAttractions(data) {
     data.forEach((attraction, i) => {
@@ -64,25 +136,41 @@ function loadAttractions(data) {
             + '<div id="collapse' + i + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading' + i + '">'
             + '<div class="panel-body"><form class="form-horizontal"><div class="form-group">'
             + '<label class="col-md-3 col-xs-3 control-label">ID</label><div class="col-md-7 col-xs-9">'
-            + '<input class="form-control attr-id" value="' + attraction.id + '" disabled></div></div>'
+            + '<input class="form-control attr-id" name="id" value="' + attraction.id + '" disabled></div></div>'
             + '<div class="form-group"><label class="col-md-3 col-xs-3 control-label">Name</label>'
-            + '<div class="col-md-7 col-xs-9"><input class="form-control" placeholder="Name" value="' + attraction.name + '">'
-            + '</div></div><div class="form-group"><label class="col-md-3 col-xs-3 control-label">Description</label>'
-            + '<div class="col-md-7 col-xs-9"><textarea class="form-control" rows="3" placeholder="Description">'
+            + '<div class="col-md-7 col-xs-9"><input class="form-control" placeholder="Name" name="name" value="'
+            + attraction.name + '"></div></div><div class="form-group"><label class="col-md-3 col-xs-3 '
+            + 'control-label">Description</label><div class="col-md-7 col-xs-9">'
+            + '<textarea class="form-control" rows="3" name="description" placeholder="Description">'
             + attraction.description + '</textarea></div></div><div class="form-group">'
             + '<label class="col-md-3 col-xs-3 control-label">Category</label><div class="col-md-7 col-xs-9">'
-            + '<select class="form-control"><option>Kids</option><option>Extreme</option><option>Hyper extreme</option>'
-            + '<option>Over hyper extreme</option></select></div></div><div class="form-group">'
+            + '<select class="form-control category-select"></select></div></div><div class="form-group">'
             + '<label class="col-md-3 col-xs-3 control-label">Price, $</label><div class="col-md-7 col-xs-9">'
-            + '<input type="number" class="form-control" placeholder="Price" value="' + attraction.price + '">'
+            + '<input type="number" class="form-control" placeholder="Price" name="price" value="' + attraction.price + '">'
             + '</div></div><div class="form-group"><label class="col-md-3 col-xs-3 control-label">Maintenance</label>'
             + '<div class="col-md-7 col-xs-9 text-left"><label class="radio-inline"><input type="radio" name="inputRadio2" '
             + 'value="off" data-toggle="modal" data-target="#maintenanceModal"> On maintenance</label>'
             + '<label class="radio-inline"><input type="radio" name="inputRadio2" value="on" checked> Already works</label>'
             + '</div></div><div class="form-group"><label class="col-md-3 col-xs-3 control-label">New image</label>'
-            + '<div class="col-md-7 col-xs-9 image-input"><input type="file"></div></div><div class="form-group">'
-            + '<div class="col-md-offset-3 col-md-5 col-xs-12"><button type="submit" class="btn btn-block btn-primary">'
-            + 'Change</button></div><div class="col-md-2 tablet-no-display"><button type="submit" '
-            + 'class="btn btn-block btn-danger">Delete</button></div></div></form></div></div></div>')
+            + '<div class="col-md-7 col-xs-9 image-input"><input type="file" name="image"></div></div><div class="form-group">'
+            + '<div class="col-md-offset-3 col-md-5 col-xs-12"><button type="button" class="btn btn-block '
+            + 'btn-primary btn-change-attr">Change</button></div><div class="col-md-2 tablet-no-display"><button type="button" '
+            + 'class="btn btn-block btn-danger btn-delete-attr">Delete</button></div></div></form></div></div></div>')
     })
+}
+
+function setCategoryOnServer() {
+    const form = $('#newCategoryForm');
+    const access_token = localStorage.getItem('access_token');
+    const name = form.find('input[name=name]').val();
+    const age = form.find('input[name=minAge]').val();
+    const height = form.find('input[name=minHeight]').val();
+    const authorization_string = '?access_token=' + access_token;
+    $.postJSON(server + "api/attractions/cat" + authorization_string,{
+        name: name,
+        minAge: age,
+        minHeight: height
+    }, (json) => {
+        console.log('woohoo', json);
+    });
 }
