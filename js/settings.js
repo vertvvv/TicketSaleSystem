@@ -1,5 +1,6 @@
 function getInfoFromToken() {
     const access_token = localStorage.getItem('access_token');
+    const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
     $.get(server + "api/accounts", {
         access_token: access_token
     }, setPageInfo)
@@ -7,7 +8,7 @@ function getInfoFromToken() {
             console.log(e);
             const errorStr = JSON.parse(e.responseText).error_description;
             if (errorStr.includes('Invalid access token') || errorStr.includes('Access token expired')) {
-                refreshToken();
+                (keep_flag) ? refreshToken() : logoutFunction();
             }
         });
 }

@@ -13,11 +13,7 @@ $(function () {
     document.title += ' - Ticket Sale System';
 });
 
-$('body').on('click', '#logout', () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        window.location = 'index.html';
-    });
+$('body').on('click', '#logout', logoutFunction);
 
 function attractionsQuery() {
     $.get(server + "/api/attractions", {}, loadAttractions);
@@ -43,9 +39,10 @@ function getAccountInfo() {
     const curDate = new Date();
     const expireDate = new Date(localStorage.getItem('expires'));
     const access_token = localStorage.getItem('access_token');
-    console.log(access_token, '\n\ntime:', expireDate);
+    const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
+    console.log(access_token, '\n\ntime:', expireDate, keep_flag);
     if (expireDate < curDate) {
-        refreshToken();
+        (keep_flag) ? refreshToken() : logoutFunction();
     } else {
         getInfoFromToken();
     }
@@ -53,6 +50,7 @@ function getAccountInfo() {
 
 function getInfoFromToken() {
     const access_token = localStorage.getItem('access_token');
+    const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
     $.get(server + "api/accounts", {
         access_token: access_token
     }, setProfileMenu)
@@ -60,9 +58,17 @@ function getInfoFromToken() {
             console.log(e);
             const errorStr = JSON.parse(e.responseText).error_description;
             if (errorStr.includes('Invalid access token') || errorStr.includes('Access token expired')) {
-                refreshToken();
+                (keep_flag) ? refreshToken() : logoutFunction();
             }
         });
+}
+
+function logoutFunction() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('expires');
+    localStorage.removeItem('keep_flag');
+    window.location = 'index.html';
 }
 
 function onLoadFunction() {
@@ -97,6 +103,9 @@ function sendOnCtrl(e) {
 function setAccessToken(info) {
     localStorage.setItem('access_token', info.access_token);
     localStorage.setItem('refresh_token', info.refresh_token);
+    if ($('#keepSignCheckbox').length) {
+        localStorage.setItem('keep_flag', $('#keepSignCheckbox').is(':checked'));
+    }
     const curDate = new Date();
     const expireDate = curDate.addMinutes((info.expires_in-60)/60);
     localStorage.setItem('expires', expireDate.toString());

@@ -2,25 +2,7 @@ $(onLoadFunction());
 $(attractionsQuery());
 $(categoriesQuery(loadCategories, 300));
 
-$('#addNewAttraction').on('click', () => {
-    const form = $('#newAttractionForm')[0];
-    const fd = new FormData(form);
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
-    const category = $('#inputCategoryNew option:selected').data('id');
-    fd.append('cat', category);
-    $.ajax({
-        url: server + "api/attractions" + authorization_string,
-        data: fd,
-        type: 'POST',
-        contentType: false,
-        processData: false,
-        success: function(json){
-            console.log('woohoo', json);
-            window.location = 'admin_attractions.html'
-        }
-    });
-});
+$('#addNewAttraction').on('click', addNewAttraction);
 
 $('#maintenanceModal').on('show.bs.modal', function (event) {
     const item = $(event.relatedTarget)
@@ -30,16 +12,7 @@ $('#maintenanceModal').on('show.bs.modal', function (event) {
     $(this).find('.attr-id-rdy').attr('placeholder', name);
 });
 
-$('#addCategory').on('click', () => {
-    setCategoryOnServer();
-    const selects = $('select');
-    const category = $('#newCategoryName').val();
-    selects.each(function (item) {
-        $(this)
-            .find('option:last-of-type')
-            .after('<option>'+category+'</option>');
-    });
-});
+$('#addCategory').on('click', setCategoryOnServer);
 
 $('#removeCategory').on('click', function() {
     categoriesQuery(deleteCategoryOnServer);
@@ -63,44 +36,75 @@ $('#removeCategory').on('click', function() {
 
 $('body')
     .on('click', '.btn-change-attr', function() {
-        const form = $(this).parent().parent().parent();
-        const fd = new FormData(form[0]);
-        const id = form.find('.attr-id').val();
-        const access_token = localStorage.getItem('access_token');
-        const authorization_string = '?access_token=' + access_token;
-        const category = form.find('.category-select option:selected').data('id');
-        fd.append('cat', category);
-        $.ajax({
-            url: server + "api/attractions/" + id + authorization_string,
-            data: fd,
-            type: 'PUT',
-            contentType: false,
-            processData: false,
-            success: function(json){
-                console.log('woohoo', json);
-            },
-            error: (e) => console.log(e)
-        });
+        changeAttractionInfo($(this));
     })
 
     .on('click', '.btn-delete-attr', function() {
-        const form = $(this).parent().parent().parent();
-        const id = form.find('.attr-id').val();
-        const access_token = localStorage.getItem('access_token');
-        const authorization_string = '?access_token=' + access_token;
-        $.ajax({
-            url: server + "api/attractions/" + id + authorization_string,
-            type: 'DELETE',
-            success: function(json){
-                console.log('woohoo', json);
-                window.location = 'admin_attractions.html'
-            },
-            error: (e) => console.log(e)
-        });
+        deleteAttraction($(this));
     });
+
+function addNewAttraction() {
+    const form = $('#newAttractionForm')[0];
+    const fd = new FormData(form);
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
+    const category = $('#inputCategoryNew option:selected').data('id');
+    if (category) {
+        fd.append('cat', category);
+    }
+    $.ajax({
+        url: server + "api/attractions" + authorization_string,
+        data: fd,
+        type: 'POST',
+        contentType: false,
+        processData: false,
+        success: function(json) {
+            console.log('woohoo', json);
+            window.location = 'admin_attractions.html';
+        },
+        error: (e) => errorRefreshFunction(e, addNewAttraction)
+    });
+}
 
 function categoriesQuery(callback, delay = 0) {
     $.get(server + "/api/attractions/cat", {}, (data) => setTimeout(() => callback(data), delay));
+}
+
+function changeAttractionInfo(element) {
+    const form = element.parent().parent().parent();
+    const fd = new FormData(form[0]);
+    const id = form.find('.attr-id').val();
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
+    const category = form.find('.category-select option:selected').data('id');
+    fd.append('cat', category);
+    $.ajax({
+        url: server + "api/attractions/" + id + authorization_string,
+        data: fd,
+        type: 'PUT',
+        contentType: false,
+        processData: false,
+        success: function(json){
+            console.log('woohoo', json);
+        },
+        error: (e) => errorRefreshFunction(e, changeAttractionInfo, element)
+    });
+}
+
+function deleteAttraction(element) {
+    const form = element.parent().parent().parent();
+    const id = form.find('.attr-id').val();
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
+    $.ajax({
+        url: server + "api/attractions/" + id + authorization_string,
+        type: 'DELETE',
+        success: function(json){
+            console.log('woohoo', json);
+            window.location = 'admin_attractions.html';
+        },
+        error: (e) => errorRefreshFunction(e, deleteAttraction, element)
+    });
 }
 
 function deleteCategoryOnServer(data) {
@@ -113,22 +117,33 @@ function deleteCategoryOnServer(data) {
         success: function(json){
             console.log('woohoo');
         },
-        error: function (e) {
-            console.log('fuck', e);
-        }
+        error: (e) => errorRefreshFunction(e, deleteCategoryOnServer, data)
     });
+}
+
+function errorRefreshFunction(e, callback, el = 0) {
+    console.log(e);
+    const errorStr = JSON.parse(e.responseText).error_description;
+    const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
+    if (errorStr.includes('Access token expired')) {
+        (keep_flag) ? refreshToken() : logoutFunction();
+    }
+    callback(el);
 }
 
 function loadCategories(data) {
     data.forEach((category, i) => {
         $('select').each((i, item) => {
-            $(item).append('<option data-id="' + category.id + '">' + category.name + '</option>')
+            const itemChecked = ($(item).data('cur-id') == category.id) ? ' selected="selected"' : '';
+            const catID = (category.id) ? category.id : false;
+            $(item).append('<option' + itemChecked + ' data-id="' + catID + '">' + category.name + '</option>');
         })
     });
 }
 
 function loadAttractions(data) {
     data.forEach((attraction, i) => {
+        const catID = (attraction.category) ? attraction.category.id : false;
         $('#accordion').append('<div class="panel panel-default">'
             + '<div class="panel-heading" role="tab" id="heading' + i + '">'
             + '<h4 class="panel-title">'
@@ -140,12 +155,12 @@ function loadAttractions(data) {
             + '<div class="form-group"><label class="col-md-3 col-xs-3 control-label">Name</label>'
             + '<div class="col-md-7 col-xs-9"><input class="form-control" placeholder="Name" name="name" value="'
             + attraction.name + '"></div></div><div class="form-group"><label class="col-md-3 col-xs-3 '
-            + 'control-label">Description</label><div class="col-md-7 col-xs-9">'
-            + '<textarea class="form-control" rows="3" name="description" placeholder="Description">'
-            + attraction.description + '</textarea></div></div><div class="form-group">'
-            + '<label class="col-md-3 col-xs-3 control-label">Category</label><div class="col-md-7 col-xs-9">'
-            + '<select class="form-control category-select"></select></div></div><div class="form-group">'
-            + '<label class="col-md-3 col-xs-3 control-label">Price, $</label><div class="col-md-7 col-xs-9">'
+            + 'control-label">Description</label><div class="col-md-7 col-xs-9"><textarea class="form-control" rows="3" '
+            + 'name="description" placeholder="Description">' + attraction.description + '</textarea></div></div>'
+            + '<div class="form-group"><label class="col-md-3 col-xs-3 control-label">Category</label>'
+            + '<div class="col-md-7 col-xs-9"><select class="form-control category-select" data-cur-id="'
+            + catID + '"><option data-id="false">Not indicated</option></select></div></div><div '
+            + 'class="form-group"><label class="col-md-3 col-xs-3 control-label">Price, $</label><div class="col-md-7 col-xs-9">'
             + '<input type="number" class="form-control" placeholder="Price" name="price" value="' + attraction.price + '">'
             + '</div></div><div class="form-group"><label class="col-md-3 col-xs-3 control-label">Maintenance</label>'
             + '<div class="col-md-7 col-xs-9 text-left"><label class="radio-inline"><input type="radio" name="inputRadio2" '
@@ -170,7 +185,20 @@ function setCategoryOnServer() {
         name: name,
         minAge: age,
         minHeight: height
-    }, (json) => {
-        console.log('woohoo', json);
+    }, (data) => {
+        console.log('woohoo', data);
+        setCategoryInDOM(data);
+    })
+        .error((e) => errorRefreshFunction(e, setCategoryOnServer));
+}
+
+function setCategoryInDOM(category) {
+    const selects = $('select');
+    const name = category.name;
+    const id = category.id;
+    selects.each(function (item) {
+        $(this)
+            .find('option:last-of-type')
+            .after('<option data-id="' + id + '">' + name + '</option>');
     });
 }
