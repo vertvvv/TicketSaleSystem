@@ -116,6 +116,10 @@ function setProfileInfo(userData) {
 }
 
 function setProfileMenu(userData) {
+    if (window.location.href.includes('admin') && !userData.admin) {
+        $('body').html('<h1 class="text-incorrect-admin">Access denied!<br>Secret info here!</h1>');
+        setTimeout(() => window.location = 'index.html', 1500);
+    }
     console.log(userData);
     const menuFile = index_directory + ((userData.admin) ? "admin_menu_profile.html" : "menu_profile.html");
     $('#menuPlace').load(menuFile, () => setProfileInfo(userData));

@@ -177,7 +177,6 @@ function forgotEmailCheck() {
 
 function loadAttractions(data) {
     data.forEach((attraction, i) => {
-        console.log(attraction);
         const mntnFlag = (attraction.maintenance) ? 'yes' : 'no';
         const category = (attraction.category) ? attraction.category.name : 'Not indicated'
         $('#main').append('<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 no-padding">'
@@ -220,15 +219,12 @@ function signUpUser(login, pass) {
         loginUser(login, pass);
     })
         .error(function(e) {
-            throwPasswordException(login, pass, e)
+            throwPasswordException(login, pass, e);
+            console.log(e);
         });
 }
 
 function throwPasswordException(input, pass, e=0) {
-    // const errorText = (e) ? (JSON.parse(e.responseText).error_description)
-    //         ? JSON.parse(e.responseText).error_description
-    //         : JSON.parse(e.responseText).desc
-    //         : 'Incorrect Email or empty password!';
     const errorText = (e) ? (JSON.parse(e.responseText).error_description) : 'Incorrect Email or empty password!';
     $('.log-in-htm').after('<p class="text-warning incorrect-email-text">' + errorText + '</p>');
     input.val('');

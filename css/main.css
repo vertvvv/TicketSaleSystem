@@ -181,6 +181,19 @@ body {
     cursor: pointer;
 }
 
+.text-incorrect-admin {
+    margin: 0 auto;
+    margin-top: 10%;
+    padding: 10%;
+    width: 70%;
+    font-size: 72px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    color: #f00;
+    background-color: #000;
+}
+
 .font-medium-bold {
     font-size: 1.3em;
     font-weight: 600;
