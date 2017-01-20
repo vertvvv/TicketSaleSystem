@@ -2,17 +2,19 @@ $(onLoadFunction());
 $(attractionsQuery());
 $(categoriesQuery(loadCategories, 300));
 
+$('#addCategory').on('click', setCategoryOnServer);
+
+$('#addMaintenance').on('click', addMaintenance);
+
 $('#addNewAttraction').on('click', addNewAttraction);
 
 $('#maintenanceModal').on('show.bs.modal', function (event) {
     const item = $(event.relatedTarget)
         .parent().parent().parent().parent()
         .find('div:first-of-type').find('.attr-id');
-    const name = (item.length) ? item.attr('placeholder') : 'New attraction';
-    $(this).find('.attr-id-rdy').attr('placeholder', name);
+    const name = item.val();
+    $(this).find('#attrMtnID').val(name);
 });
-
-$('#addCategory').on('click', setCategoryOnServer);
 
 $('#removeCategory').on('click', function() {
     categoriesQuery(deleteCategoryOnServer);
@@ -43,11 +45,23 @@ $('body')
         deleteAttraction($(this));
     });
 
+function addMaintenance() {
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
+    $.postJSON(server + "api/attractions/main/" + authorization_string,{
+        startdate: $('#startDate').val(),
+        reason: $('#reason').val(),
+        enddate: $('#endDate').val()
+    }, (data) => {
+        console.log('woohoo', data);
+        setMaintenanceToAttraction(data.id, $('#attrMtnID').val());
+    })
+        .error((e) => errorRefreshFunction(e, addMaintenance));
+}
+
 function addNewAttraction() {
     const form = $('#newAttractionForm')[0];
     const fd = new FormData(form);
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
     const category = $('#inputCategoryNew option:selected').data('id');
     if (category) {
         fd.append('cat', category);
@@ -86,6 +100,7 @@ function changeAttractionInfo(element) {
         processData: false,
         success: function(json){
             console.log('woohoo', json);
+            window.location = 'admin_attractions.html';
         },
         error: (e) => errorRefreshFunction(e, changeAttractionInfo, element)
     });
@@ -121,14 +136,30 @@ function deleteCategoryOnServer(data) {
     });
 }
 
-function errorRefreshFunction(e, callback, el = 0) {
+function deleteMaintenance(element) {
+    const mtnID = $(element).data('id');
+    console.log(mtnID);
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
+    $.ajax({
+        url: server + "/api/attractions/main/" + mtnID + authorization_string,
+        type: 'DELETE',
+        success: function(json){
+            console.log('woohoo');
+            window.location = 'admin_attractions.html'
+        },
+        error: (e) => errorRefreshFunction(e, deleteMaintenance, mtnID)
+    });
+}
+
+function errorRefreshFunction(e, callback, el = 0, el2 = 0) {
     console.log(e);
     const errorStr = JSON.parse(e.responseText).error_description;
     const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
     if (errorStr.includes('Access token expired')) {
         (keep_flag) ? refreshToken() : logoutFunction();
     }
-    callback(el);
+    callback(el, el2);
 }
 
 function loadCategories(data) {
@@ -144,6 +175,19 @@ function loadCategories(data) {
 function loadAttractions(data) {
     data.forEach((attraction, i) => {
         const catID = (attraction.category) ? attraction.category.id : false;
+        let maintenanceString = '';
+        if (attraction.maintenance) {
+            maintenanceString = '<label class="radio-inline"><input type="radio" name="inputRadio2" '
+            + 'value="off" data-toggle="modal" data-target="#maintenanceModal" checked> On maintenance</label>'
+            + '<label class="radio-inline"><input type="radio" data-id="'
+            + attraction.maintenance.id + '" onclick="deleteMaintenance(this);"'
+            + ' name="inputRadio2" value="on"> Already works</label>'
+        } else {
+            maintenanceString = '<label class="radio-inline"><input type="radio" name="inputRadio2" '
+        + 'value="off" data-toggle="modal" data-target="#maintenanceModal"> On maintenance</label>'
+        + '<label class="radio-inline"><input type="radio" name="inputRadio2" value="on" checked> Already works</label>'
+        }
+        const mtnID = (attraction.maintenance) ? ' data-id="' + attraction.maintenance.id + '"' : '';
         $('#accordion').append('<div class="panel panel-default">'
             + '<div class="panel-heading" role="tab" id="heading' + i + '">'
             + '<h4 class="panel-title">'
@@ -163,9 +207,7 @@ function loadAttractions(data) {
             + 'class="form-group"><label class="col-md-3 col-xs-3 control-label">Price, $</label><div class="col-md-7 col-xs-9">'
             + '<input type="number" class="form-control" placeholder="Price" name="price" value="' + attraction.price + '">'
             + '</div></div><div class="form-group"><label class="col-md-3 col-xs-3 control-label">Maintenance</label>'
-            + '<div class="col-md-7 col-xs-9 text-left"><label class="radio-inline"><input type="radio" name="inputRadio2" '
-            + 'value="off" data-toggle="modal" data-target="#maintenanceModal"> On maintenance</label>'
-            + '<label class="radio-inline"><input type="radio" name="inputRadio2" value="on" checked> Already works</label>'
+            + '<div class="col-md-7 col-xs-9 text-left">' + maintenanceString
             + '</div></div><div class="form-group"><label class="col-md-3 col-xs-3 control-label">New image</label>'
             + '<div class="col-md-7 col-xs-9 image-input"><input type="file" name="image"></div></div><div class="form-group">'
             + '<div class="col-md-offset-3 col-md-5 col-xs-12"><button type="button" class="btn btn-block '
@@ -200,5 +242,24 @@ function setCategoryInDOM(category) {
         $(this)
             .find('option:last-of-type')
             .after('<option data-id="' + id + '">' + name + '</option>');
+    });
+}
+
+function setMaintenanceToAttraction(mtnID, attrID) {
+    const fd = new FormData();
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
+    fd.append('maintenanceid', mtnID);
+    $.ajax({
+        url: server + "api/attractions/" + attrID + authorization_string,
+        data: fd,
+        type: 'PUT',
+        contentType: false,
+        processData: false,
+        success: function(json){
+            console.log('woohoo', json);
+            window.location = 'admin_attractions.html';
+        },
+        error: (e) => errorRefreshFunction(e, setMaintenanceToAttraction, mtnID, attrID)
     });
 }

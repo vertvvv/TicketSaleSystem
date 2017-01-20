@@ -86,29 +86,29 @@
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal">
+                <form id="newMaintenanceForm" class="form-horizontal">
                     <div class="form-group">
                         <label class="col-md-3 col-xs-3 control-label">Attraction ID</label>
                         <div class="col-md-7 col-xs-9">
-                            <input class="form-control attr-id-rdy" disabled>
+                            <input id="attrMtnID" class="form-control attr-id-rdy" disabled>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 col-xs-3 control-label">Start Date</label>
                         <div class="col-md-7 col-xs-9">
-                            <input type="date" class="form-control">
+                            <input id="startDate" type="date" class="form-control">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 col-xs-3 control-label">Reason</label>
                         <div class="col-md-7 col-xs-9">
-                            <textarea class="form-control" rows="5" placeholder="Reason"></textarea>
+                            <textarea id="reason" class="form-control" rows="5" placeholder="Reason"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 col-xs-3 control-label">End Date</label>
                         <div class="col-md-7 col-xs-9">
-                            <input type="date" class="form-control">
+                            <input id="endDate" type="date" class="form-control">
                         </div>
                     </div>
                 </form>
@@ -175,7 +175,7 @@
                                     <input type="number" name="price" class="form-control" id="inputPriceNew" placeholder="Price">
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <!--<div class="form-group">
                                 <label class="col-md-3 col-xs-3 control-label">Maintenance</label>
                                 <div class="col-md-7 col-xs-9 text-left">
                                     <label class="radio-inline">
@@ -186,7 +186,7 @@
                                         <input type="radio" name="inputRadioNew" value="on" checked> Already works
                                     </label>
                                 </div>
-                            </div>
+                            </div>-->
                             <div class="form-group">
                                 <label class="col-md-3 col-xs-3 control-label">Image</label>
                                 <div class="col-md-7 col-xs-9 image-input">

@@ -141,10 +141,13 @@ function checkEmptyLoginInputs(input, pass) {
 }
 
 function checkMaintenance(box) {
-    const flag = (box.data('maintenance') == 'yes');
+    const mtnText = box.data('maintenance');
+    const flag = (mtnText == 'no');
     const buyButton = $('.btn-footer-buy');
-    $('.maintenance-text').toggleClass('no-display', !flag);
-    buyButton.prop('disabled', flag);
+    $('.maintenance-text').toggleClass('no-display', flag)
+        .text('')
+        .append(mtnText);
+    buyButton.prop('disabled', !flag);
 }
 
 function checkPasswords(login, pass1, pass2) {
@@ -177,13 +180,24 @@ function forgotEmailCheck() {
 
 function loadAttractions(data) {
     data.forEach((attraction, i) => {
-        const mntnFlag = (attraction.maintenance) ? 'yes' : 'no';
-        const category = (attraction.category) ? attraction.category.name : 'Not indicated'
+        let mtnText = 'no';
+        if (attraction.maintenance) {
+            mtnText = 'Attraction is currently on maintenance';
+            if (attraction.maintenance.enddate) {
+                const enddate = attraction.maintenance.enddate;
+                mtnText += (' before ' + enddate);
+            }
+            if (attraction.maintenance.reason) {
+                const reason = attraction.maintenance.reason;
+                mtnText += (', reason: ' + reason);
+            }
+        }
+        const category = (attraction.category) ? attraction.category.name : 'Not indicated';
         $('#main').append('<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 no-padding">'
             + '<div class="box" id="attr' + i + '" data-toggle="modal" data-target="#attractionModal" '
             + 'data-name="' + attraction.name + '" data-description="' + attraction.description + '" '
             + 'data-category="' + category + '" data-price="' + attraction.price + '" '
-            + 'data-maintenance="' + mntnFlag + '" data-image="' + attraction.image + '">'
+            + 'data-maintenance="' + mtnText + '" data-image="' + attraction.image + '">'
             + '<div class="box-icon"></div><div class="box-title">' + attraction.name + '</div></div></div>');
         $('#attr' + i).find('.box-icon').css('background-image', 'url(' + attraction.thumbnail + ')');
     });
