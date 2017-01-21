@@ -63,6 +63,8 @@ function addNewAttraction() {
     const form = $('#newAttractionForm')[0];
     const fd = new FormData(form);
     const category = $('#inputCategoryNew option:selected').data('id');
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = '?access_token=' + access_token;
     if (category) {
         fd.append('cat', category);
     }

@@ -17,6 +17,7 @@ $('#attractionModal').on('show.bs.modal', function (event) {
     $(this).find('.modal-title').text(attractionData.name);
     $('#attrDescription').text(attractionData.description);
     $('#attrCategory').text(attractionData.category);
+    $('#attrCategory').attr('data-content', attractionData.catdescription);
     $('#price').data('price', attractionData.price).text(parseFloat(attractionData.price).toFixed(2));
     $('#ticket-counter').text('1');
     $('#attrid').attr('src', attractionData.image);
@@ -67,6 +68,10 @@ $(function () {
         getAccountInfo();
     } else {
         $('#menuPlace').load(directory + "menu_login.html");
+    }
+    if (document.referrer.includes('localhost') && !access_token) {
+        $('#loginBody').load(directory + "login.html");
+        $('#openModal').modal('show');
     }
     attractionsQuery();
 });
@@ -185,7 +190,7 @@ function loadAttractions(data) {
             mtnText = 'Attraction is currently on maintenance';
             if (attraction.maintenance.enddate) {
                 const enddate = attraction.maintenance.enddate;
-                mtnText += (' before ' + enddate);
+                mtnText += (' till ' + enddate);
             }
             if (attraction.maintenance.reason) {
                 const reason = attraction.maintenance.reason;
@@ -193,11 +198,15 @@ function loadAttractions(data) {
             }
         }
         const category = (attraction.category) ? attraction.category.name : 'Not indicated';
+        let desc = category;
+        if (attraction.category) {
+            desc = 'Age: ' + attraction.category.minAge + '+, height: ' + attraction.category.minHeight + '+ cm';
+        }
         $('#main').append('<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 no-padding">'
             + '<div class="box" id="attr' + i + '" data-toggle="modal" data-target="#attractionModal" '
             + 'data-name="' + attraction.name + '" data-description="' + attraction.description + '" '
-            + 'data-category="' + category + '" data-price="' + attraction.price + '" '
-            + 'data-maintenance="' + mtnText + '" data-image="' + attraction.image + '">'
+            + 'data-category="' + category + '" data-catdescription="' + desc + '" data-price="'
+            + attraction.price + '" ' + 'data-maintenance="' + mtnText + '" data-image="' + attraction.image + '">'
             + '<div class="box-icon"></div><div class="box-title">' + attraction.name + '</div></div></div>');
         $('#attr' + i).find('.box-icon').css('background-image', 'url(' + attraction.thumbnail + ')');
     });

@@ -424,6 +424,7 @@ nav {
 
 .modal-span-text {
     font-weight: 300 !important;
+    cursor: pointer;
 }
 
 .modal-body p {
