@@ -46,9 +46,7 @@ $('body')
     });
 
 function addMaintenance() {
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
-    $.postJSON(server + "api/attractions/main/" + authorization_string,{
+    $.postJSON(server + "api/attractions/main/" + authorizationString(),{
         startdate: $('#startDate').val(),
         reason: $('#reason').val(),
         enddate: $('#endDate').val()
@@ -63,13 +61,11 @@ function addNewAttraction() {
     const form = $('#newAttractionForm')[0];
     const fd = new FormData(form);
     const category = $('#inputCategoryNew option:selected').data('id');
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
     if (category) {
         fd.append('cat', category);
     }
     $.ajax({
-        url: server + "api/attractions" + authorization_string,
+        url: server + "api/attractions" + authorizationString(),
         data: fd,
         type: 'POST',
         contentType: false,
@@ -90,12 +86,10 @@ function changeAttractionInfo(element) {
     const form = element.parent().parent().parent();
     const fd = new FormData(form[0]);
     const id = form.find('.attr-id').val();
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
     const category = form.find('.category-select option:selected').data('id');
     fd.append('cat', category);
     $.ajax({
-        url: server + "api/attractions/" + id + authorization_string,
+        url: server + "api/attractions/" + id + authorizationString(),
         data: fd,
         type: 'PUT',
         contentType: false,
@@ -111,10 +105,8 @@ function changeAttractionInfo(element) {
 function deleteAttraction(element) {
     const form = element.parent().parent().parent();
     const id = form.find('.attr-id').val();
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
     $.ajax({
-        url: server + "api/attractions/" + id + authorization_string,
+        url: server + "api/attractions/" + id + authorizationString(),
         type: 'DELETE',
         success: function(json){
             console.log('woohoo', json);
@@ -126,10 +118,8 @@ function deleteAttraction(element) {
 
 function deleteCategoryOnServer(data) {
     const result = $.grep(data, (item) => item.name == $('#inputCategoryNew').find('option:checked').text());
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
     $.ajax({
-        url: server + "/api/attractions/cat/" + result[0].id + authorization_string,
+        url: server + "/api/attractions/cat/" + result[0].id + authorizationString(),
         type: 'DELETE',
         success: function(json){
             console.log('woohoo');
@@ -141,10 +131,8 @@ function deleteCategoryOnServer(data) {
 function deleteMaintenance(element) {
     const mtnID = $(element).data('id');
     console.log(mtnID);
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
     $.ajax({
-        url: server + "/api/attractions/main/" + mtnID + authorization_string,
+        url: server + "/api/attractions/main/" + mtnID + authorizationString(),
         type: 'DELETE',
         success: function(json){
             console.log('woohoo');
@@ -152,16 +140,6 @@ function deleteMaintenance(element) {
         },
         error: (e) => errorRefreshFunction(e, deleteMaintenance, mtnID)
     });
-}
-
-function errorRefreshFunction(e, callback, el = 0, el2 = 0) {
-    console.log(e);
-    const errorStr = JSON.parse(e.responseText).error_description;
-    const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
-    if (errorStr.includes('Access token expired')) {
-        (keep_flag) ? refreshToken() : logoutFunction();
-    }
-    callback(el, el2);
 }
 
 function loadCategories(data) {
@@ -220,12 +198,10 @@ function loadAttractions(data) {
 
 function setCategoryOnServer() {
     const form = $('#newCategoryForm');
-    const access_token = localStorage.getItem('access_token');
     const name = form.find('input[name=name]').val();
     const age = form.find('input[name=minAge]').val();
     const height = form.find('input[name=minHeight]').val();
-    const authorization_string = '?access_token=' + access_token;
-    $.postJSON(server + "api/attractions/cat" + authorization_string,{
+    $.postJSON(server + "api/attractions/cat" + authorizationString(),{
         name: name,
         minAge: age,
         minHeight: height
@@ -249,11 +225,9 @@ function setCategoryInDOM(category) {
 
 function setMaintenanceToAttraction(mtnID, attrID) {
     const fd = new FormData();
-    const access_token = localStorage.getItem('access_token');
-    const authorization_string = '?access_token=' + access_token;
     fd.append('maintenanceid', mtnID);
     $.ajax({
-        url: server + "api/attractions/" + attrID + authorization_string,
+        url: server + "api/attractions/" + attrID + authorizationString(),
         data: fd,
         type: 'PUT',
         contentType: false,

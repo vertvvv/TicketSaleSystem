@@ -15,6 +15,11 @@ $(function () {
 
 $('body').on('click', '#logout', logoutFunction);
 
+function authorizationString() {
+    const access_token = localStorage.getItem('access_token');
+    return '?access_token=' + access_token;
+}
+
 function attractionsQuery() {
     $.get(server + "/api/attractions", {}, loadAttractions);
 }
@@ -28,6 +33,16 @@ function checkIfEmpty(textarea) {
     } else {
         textarea.attr("id") == "dialogMessage" ? sendMessage() : messageSent();
     }
+}
+
+function errorRefreshFunction(e, callback, el = 0, el2 = 0) {
+    console.log(e);
+    const errorStr = JSON.parse(e.responseText).error_description;
+    const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
+    if (errorStr.includes('Access token expired')) {
+        (keep_flag) ? refreshToken() : logoutFunction();
+    }
+    callback(el, el2);
 }
 
 function formattedMessage(mes) {
