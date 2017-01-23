@@ -935,6 +935,7 @@ nav {
     background-color: #f0f0f0;
     text-align: center;
     width: 80%;
+    min-height: 500px;
     border-radius: 30px;
     font-weight: 300;
     padding-right: 2%;

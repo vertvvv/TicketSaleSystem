@@ -3,37 +3,13 @@ const nextYearTomorrow = new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 10
 const directory = "assets/cart/";
 
 $(onLoadFunction());
-$(cartQuery());
+$(cartQuery(loadCart));
 $(setTimeout(() => $('#footer').removeClass('hidden'), 200));
 
 $('#visitDate')
     .val(tomorrow.getFormattedDate())
     .attr('min', tomorrow.getFormattedDate())
     .attr('max', nextYearTomorrow.getFormattedDate());
-
-function totalAmount() {
-    let totalCost = 0;
-    $('.cart-item').each(function() {
-       const ticket = $(this).find('[data-price]');
-       const ticketPrice = ticket.text();
-       if (!($(this).hasClass('hidden-ticket'))) {
-           totalCost += parseFloat(ticketPrice);
-       }
-    });
-    if (totalCost == 0) {
-        cartEmpty();
-    } else {
-        $("#totalAmount").text(totalCost.toFixed(2));
-    }
-    checkMenuSum();
-}
-
-function cartEmpty() {
-    const main = $('#display');
-    const testText = "with tickets";
-    main.load(directory + "cart_empty.html");
-    setTimeout(() => checkMenuSum(), 200);
-}
 
 $('body')
     .on('click', '.close-ticket', function () {
@@ -49,28 +25,50 @@ $('body')
 
     .on('click', '.btn-pay-now', () => {
         let thisdate = new Date($("#visitDate").val());
+        confirmPurchase(thisdate);
         $("#completeDate").text(thisdate.toLocaleDateString());
         $("#completeCost").text($("#totalAmount").text());
     })
 
     .on('click', '.change-quant', setSumm);
 
-function cartQuery() {
-    $.ajax({
-        url: server + "api/orders/cart" + authorizationString(),
-        type: 'GET',
-        success: function(json){
-            console.log('woohoo', json);
-            loadCart(json);
-        },
-        error: (e) => errorRefreshFunction(e, cartQuery)
-    });
+function addTicketToCart(element) {
+    const ticketBody = $(element).parent().parent().parent();
+    const id = ticketBody.data('id');
+    addItemToCart(id);
+}
+
+function cartEmpty() {
+    const main = $('#display');
+    const testText = "with tickets";
+    main.load(directory + "cart_empty.html");
+    setTimeout(() => checkMenuSum(), 200);
 }
 
 function checkMenuSum() {
     let result = $('.ticket-counter').toArray()
         .reduce((sum, cur) => sum + parseInt(cur.textContent), 0);
     setTimeout(() => $('.menu-span').text(result), 300);
+}
+
+function confirmPurchase(date) {
+    const visitdate = '?visitdate=' + date.getFormattedDate() + '&';
+    $.ajax({
+        url: server + "api/orders" + visitdate + authorizationString().substr(1),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        type: 'PUT',
+        success: function(json){
+            console.log('woohoo', json);
+        },
+        error: (e) => errorRefreshFunction(e, confirmPurchase, date)
+    });
+}
+
+function deleteTicketFromCart(element) {
+    console.log('yeeeaaahhh!!');
 }
 
 function findRepeat(name) {
@@ -93,10 +91,9 @@ function loadCart(data) {
         data.tickets.forEach((item, i) => {
             const attr = item.attraction;
             const price = parseFloat(attr.price).toFixed(2);
-            console.log(item);
             if (!findRepeat(attr.name)) {
-                $('#ticketsPlace').append('<div class="cart-item container row">'
-                    + '<div class="col-md-4 col-xs-7 cart-item-img vcenter">'
+                $('#ticketsPlace').append('<div class="cart-item container row" data-id="'
+                    + attr.id + '"><div class="col-md-4 col-xs-7 cart-item-img vcenter">'
                     + '<img class="attr-img" src="' + attr.thumbnail + '" alt="attrImage"></div>'
                     + '<div class="col-md-4 col-xs-7 cart-item-info vcenter">'
                     + '<p class="cart-item-name">Attraction: <span>' + attr.name + '</span></p>'
@@ -119,6 +116,11 @@ function loadCart(data) {
 }
 
 function setSumm() {
+    if ($(this).hasClass('glyphicon-plus')) {
+        addTicketToCart(this);
+    } else if ($(this).hasClass('glyphicon-minus') && (parseInt($(this).siblings('.ticket-counter').text(), 10) > 1)){
+        deleteTicketFromCart(this);
+    }
     const ticketBody = $(this).parent().parent().parent();
     const quantity = ticketBody.find('.ticket-counter');
     const sumPrice = ticketBody.find('[data-price]');
@@ -134,4 +136,21 @@ function setSumm() {
     quantity.text(ticketCounter);
     sumPrice.text((ticketCounter*parseFloat(sumPrice.data('price'))).toFixed(2));
     totalAmount();
+}
+
+function totalAmount() {
+    let totalCost = 0;
+    $('.cart-item').each(function() {
+        const ticket = $(this).find('[data-price]');
+        const ticketPrice = ticket.text();
+        if (!($(this).hasClass('hidden-ticket'))) {
+            totalCost += parseFloat(ticketPrice);
+        }
+    });
+    if (totalCost == 0) {
+        cartEmpty();
+    } else {
+        $("#totalAmount").text(totalCost.toFixed(2));
+    }
+    checkMenuSum();
 }

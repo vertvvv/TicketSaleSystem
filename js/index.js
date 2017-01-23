@@ -21,6 +21,7 @@ $('#attractionModal').on('show.bs.modal', function (event) {
     $('#price').data('price', attractionData.price).text(parseFloat(attractionData.price).toFixed(2));
     $('#ticket-counter').text('1');
     $('#attrid').attr('src', attractionData.image);
+    $('.btn-footer-buy').data('id', attractionData.id);
 });
 
 $('body')
@@ -55,7 +56,13 @@ $('body')
     .on('click', 'label', emailWarningRemove)
 
     .on('click', '.btn-footer-buy', function () {
-        (!($('.avatar-img').length)) ? openLoginWindow() : animatePicture($(this));
+        if (!($('.avatar-img').length)) {
+            openLoginWindow();
+        } else {
+            animatePicture($(this));
+            const cnt = parseInt($('#ticket-counter').text(), 10);
+            addItemToCart($(this).data('id'), cnt);
+        }
         const menuSpan = $('.menu-span');
         const oldCartCount = parseInt(menuSpan.text());
         const thisOrderCount = parseInt($('#ticket-counter').text());
@@ -206,7 +213,8 @@ function loadAttractions(data) {
             + '<div class="box" id="attr' + i + '" data-toggle="modal" data-target="#attractionModal" '
             + 'data-name="' + attraction.name + '" data-description="' + attraction.description + '" '
             + 'data-category="' + category + '" data-catdescription="' + desc + '" data-price="'
-            + attraction.price + '" ' + 'data-maintenance="' + mtnText + '" data-image="' + attraction.image + '">'
+            + attraction.price + '" data-id="' + attraction.id + '" '
+            + 'data-maintenance="' + mtnText + '" data-image="' + attraction.image + '">'
             + '<div class="box-icon"></div><div class="box-title">' + attraction.name + '</div></div></div>');
         $('#attr' + i).find('.box-icon').css('background-image', 'url(' + attraction.thumbnail + ')');
     });

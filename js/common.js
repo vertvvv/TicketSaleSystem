@@ -15,13 +15,46 @@ $(function () {
 
 $('body').on('click', '#logout', logoutFunction);
 
+function addItemToCart(id, count = 1) {
+    let data = '["' + id;
+    for (let i = 1; i < count; i++) {
+        data += ('","' + id);
+    }
+    data += '"]';
+    $.ajax({
+        url: server + "api/tickets" + authorizationString(),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        data: data,
+        type: 'POST',
+        success: function(json){
+            console.log('woohoo', json);
+        },
+        error: (e) => errorRefreshFunction(e, addItemToCart, id, count)
+    });
+}
+
+function attractionsQuery() {
+    $.get(server + "/api/attractions", {}, loadAttractions);
+}
+
 function authorizationString() {
     const access_token = localStorage.getItem('access_token');
     return '?access_token=' + access_token;
 }
 
-function attractionsQuery() {
-    $.get(server + "/api/attractions", {}, loadAttractions);
+function cartQuery(callback) {
+    $.ajax({
+        url: server + "api/orders/cart" + authorizationString(),
+        type: 'GET',
+        success: function(json){
+            console.log('woohoo', json);
+            callback(json);
+        },
+        error: (e) => errorRefreshFunction(e, cartQuery, callback)
+    });
 }
 
 function checkIfEmpty(textarea) {
@@ -136,7 +169,10 @@ function setProfileInfo(userData) {
         ? userData.firstname + ' ' + userData.lastname
         : userData.mail;
     $('#namePlace').html('<img class="img-circle avatar-img" src="'+ userData.avatar
-        + '" alt="">' + name + ' ' + '<span class="caret"></span>')
+        + '" alt="">' + name + ' ' + '<span class="caret"></span>');
+    cartQuery((data) => {
+        $('.menu-span').text(data.tickets.length);
+    });
 }
 
 function setProfileMenu(userData) {
