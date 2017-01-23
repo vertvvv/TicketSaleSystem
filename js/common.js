@@ -16,11 +16,7 @@ $(function () {
 $('body').on('click', '#logout', logoutFunction);
 
 function addItemToCart(id, count = 1) {
-    let data = '["' + id;
-    for (let i = 1; i < count; i++) {
-        data += ('","' + id);
-    }
-    data += '"]';
+    const data = makeTicketsArray(id, count);
     $.ajax({
         url: server + "api/tickets" + authorizationString(),
         headers: {
@@ -117,6 +113,15 @@ function logoutFunction() {
     localStorage.removeItem('expires');
     localStorage.removeItem('keep_flag');
     window.location = 'index.html';
+}
+
+function makeTicketsArray(id, count) {
+    let data = '["' + id;
+    for (let i = 1; i < count; i++) {
+        data += ('","' + id);
+    }
+    data += '"]';
+    return data;
 }
 
 function onLoadFunction() {

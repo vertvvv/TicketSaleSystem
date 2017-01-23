@@ -14,6 +14,9 @@ $('#visitDate')
 $('body')
     .on('click', '.close-ticket', function () {
         const ticket = $(this).parent().parent();
+        const id = ticket.data('id');
+        const count = parseInt(ticket.find('.ticket-counter').text(), 10);
+        deleteItemFromCart(id, count);
         ticket.addClass('nonvisible-ticket');
         ticket.delay(1000).queue(function() {
             $(this)
@@ -67,8 +70,27 @@ function confirmPurchase(date) {
     });
 }
 
+function deleteItemFromCart(id, count = 1) {
+    const data = makeTicketsArray(id, count);
+    $.ajax({
+        url: server + "api/tickets" + authorizationString(),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        data: data,
+        type: 'DELETE',
+        success: function(json){
+            console.log('woohoo', json);
+        },
+        error: (e) => errorRefreshFunction(e, deleteItemFromCart, id, count)
+    });
+}
+
 function deleteTicketFromCart(element) {
-    console.log('yeeeaaahhh!!');
+    const ticketBody = $(element).parent().parent().parent();
+    const id = ticketBody.data('id');
+    deleteItemFromCart(id);
 }
 
 function findRepeat(name) {

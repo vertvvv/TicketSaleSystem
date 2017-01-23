@@ -928,7 +928,15 @@ nav {
     font-weight: 300;
     margin: 0 auto;
     margin-top: 2%;
-    padding-bottom: 1%;
+}
+
+.order-outer>header {
+    cursor: pointer;
+}
+
+.order-outer>div {
+    opacity: 0;
+    display: none;
 }
 
 .orders-main {
