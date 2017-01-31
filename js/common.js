@@ -60,7 +60,7 @@ function checkIfEmpty(textarea) {
         textarea.attr('placeholder', 'Write something!');
         textarea.parent().parent().addClass('has-error');
     } else {
-        textarea.attr("id") == "dialogMessage" ? sendMessage() : messageSent();
+        textarea.attr("id") == "dialogMessage" ? sendMessage() : sendNewDialog();
     }
 }
 
@@ -143,6 +143,30 @@ function refreshToken() {
     }, setAccessToken)
 }
 
+function sendMessage() {
+    const dialogMessage = $('#dialogMessage');
+    const modal = $('#dialogModal');
+    const todayDate = (new Date()).getFullFormattedDate();
+    const messageType = (window.location.href.includes('admin')) ? '/addanswer' : '/addquestion';
+    const idString = modal.data('id') + messageType;
+    $.postJSON(server + "api/dialogs/" + idString + authorizationString(), {
+        date: todayDate,
+        text: dialogMessage.val(),
+    }, (json) => {
+        console.log('woohoo', json);
+        const lastMessage = $('.modal-message:last');
+        const type = (window.location.href.includes('admin')) ? 'modal-answer' : 'modal-question';
+        const imgpath = json.messages[0].user.avatar.substr(1);
+        lastMessage.after('<div class="modal-message ' + type + '">'
+            + '<img class="img-circle message-img" src="' + imgpath + '" alt="">'
+            + '<p>' + formattedMessage(dialogMessage.val()) + '</p>'
+            + '<span class="message-date">' + todayDate + '</span>'
+            + '</div>');
+        dialogMessage.val('');
+    })
+        .error((e) => errorRefreshFunction(e, sendMessage));
+}
+
 function sendOnCtrl(e) {
     const textarea = $(e.target);
     if (e.keyCode == 13 && e.ctrlKey) {
@@ -173,7 +197,7 @@ function setProfileInfo(userData) {
     const name  = (userData.firstname && userData.lastname)
         ? userData.firstname + ' ' + userData.lastname
         : userData.mail;
-    $('#namePlace').html('<img class="img-circle avatar-img" src="'+ userData.avatar
+    $('#namePlace').html('<img class="img-circle avatar-img" src="' + userData.avatar.substr(1)
         + '" alt="">' + name + ' ' + '<span class="caret"></span>');
     cartQuery((data) => {
         $('.menu-span').text(data.tickets.length);
@@ -188,6 +212,18 @@ function setProfileMenu(userData) {
     console.log(userData);
     const menuFile = index_directory + ((userData.admin) ? "admin_menu_profile.html" : "menu_profile.html");
     $('#menuPlace').load(menuFile, () => setProfileInfo(userData));
+}
+
+function singleDialogQuery(id) {
+    $.ajax({
+        url: server + "api/dialogs/" + id + authorizationString(),
+        type: 'GET',
+        success: function(json){
+            console.log('woohoo', json);
+            putInfoInModal(json);
+        },
+        error: (e) => errorRefreshFunction(e, singleDialogQuery, id)
+    });
 }
 
 String.prototype.isTrueEmail = function () {
@@ -207,7 +243,7 @@ Date.prototype.addMinutes = function(minutes)
     return date;
 };
 
-Date.prototype.getFormattedTime = function () {
+Date.prototype.getFormattedTime = function() {
     return ("0" + this.getDate()).slice(-2)
         + "."
         + ("0" + (this.getMonth() + 1)).slice(-2)
@@ -219,12 +255,26 @@ Date.prototype.getFormattedTime = function () {
         + ("0" + this.getMinutes()).slice(-2);
 };
 
-Date.prototype.getFormattedDate = function () {
+Date.prototype.getFormattedDate = function() {
     return this.getFullYear()
         + "-"
         + ("0" + (this.getMonth() + 1)).slice(-2)
         + "-"
         + ("0" + this.getDate()).slice(-2);
+};
+
+Date.prototype.getFullFormattedDate = function() {
+    return this.getFullYear()
+        + "-"
+        + ("0" + (this.getMonth() + 1)).slice(-2)
+        + "-"
+        + ("0" + this.getDate()).slice(-2)
+        + " "
+        + (this.getHours())
+        + ":"
+        + ("0" + this.getMinutes()).slice(-2)
+        + ":"
+        + ("0" + this.getSeconds()).slice(-2);
 };
 
 $.postJSON = function(url, data, callback) {

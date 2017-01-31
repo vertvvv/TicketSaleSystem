@@ -98,7 +98,7 @@ function setPageInfo(info) {
         $('#profileBirthDate').parent().removeClass('hidden');
         $('#profileBirthDate').text(setRightDateFormat(info.birthdate));
     }
-    $('.img-thumbnail').attr('src', info.avatar);
+    $('.img-thumbnail').attr('src', info.avatar.substr(1));
 }
 
 function setRightDateFormat(date) {

@@ -214,9 +214,9 @@ function loadAttractions(data) {
             + 'data-name="' + attraction.name + '" data-description="' + attraction.description + '" '
             + 'data-category="' + category + '" data-catdescription="' + desc + '" data-price="'
             + attraction.price + '" data-id="' + attraction.id + '" '
-            + 'data-maintenance="' + mtnText + '" data-image="' + attraction.image + '">'
+            + 'data-maintenance="' + mtnText + '" data-image="' + attraction.image.substr(1) + '">'
             + '<div class="box-icon"></div><div class="box-title">' + attraction.name + '</div></div></div>');
-        $('#attr' + i).find('.box-icon').css('background-image', 'url(' + attraction.thumbnail + ')');
+        $('#attr' + i).find('.box-icon').css('background-image', 'url(' + attraction.thumbnail.substr(1) + ')');
     });
 }
 

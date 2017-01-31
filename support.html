@@ -78,39 +78,13 @@
             </div>
 
             <div class="modal-body">
-                <div class="modal-message modal-question">
-                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
-                    <p>Hello! I can't buy ticket on 05.12.2016 on Ferris Wheel. Why can't I do this?</p>
-                    <span class="message-date">02.12.2016, 4:20</span>
-                </div>
-                <div class="modal-message modal-answer">
-                    <img class="img-circle message-img" src="img/identicon6.png" alt="">
-                    <p>Good morning! Which payment system did you use?</p>
-                    <span class="message-date">02.12.2016, 4:22</span>
-                </div>
-                <div class="modal-message modal-question">
-                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
-                    <p>I used PayPal.</p>
-                    <span class="message-date">02.12.2016, 5:25</span>
-                </div>
-                <div class="modal-message modal-answer">
-                    <img class="img-circle message-img" src="img/identicon6.png" alt="">
-                    <p>PayPal is currently unavailable on our site, you can use your credit card to pay. Best regards, Ticket Sale System Team.</p>
-                    <span class="message-date">02.12.2016, 5:28</span>
-                </div>
-                <div class="modal-message modal-question">
-                    <img class="img-circle message-img" src="img/identicon8.png" alt="">
-                    <p>Thanks!</p>
-                    <span class="message-date">02.12.2016, 6:25</span>
-                </div>
-                <form class="form-horizontal">
+                <form id="modalDialogBody" class="form-horizontal">
                     <div class="form-group">
                         <div class="col-md-12">
                             <textarea id="dialogMessage" class="form-control" rows="3" placeholder="Your message..."></textarea>
                         </div>
                     </div>
                 </form>
-
             </div>
 
             <div class="modal-footer">
@@ -148,15 +122,15 @@
         </div>
         <div class="hr-sup mobile-no-display"></div>
 
-        <h2 class="mobile-no-display">If you still have unanswered questions, ask our team</h2>
-
-        <h2>(<a class="test-link">with questions</a> or <a class="test-link">without questions</a>)</h2>
+        <h2 class="mobile-no-display">If you still have unanswered questions, <a class="cursor-pointer" data-toggle="modal" data-target="#newThemeModal">ask our team</a></h2>
 
         <div id="questions">
 
             <div class="questions">
                 <h3>Your questions:</h3>
-                <span>You haven't any questions now.</span> <a data-toggle="modal" data-target="#newThemeModal">Ask something!</a>
+                <div id="questionsPlace">
+
+                </div>
             </div>
 
         </div>

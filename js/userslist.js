@@ -74,7 +74,7 @@ function loadUsers(data) {
         $('#loadInfo').after('<div class="user-container row">'
             + '<div class="col-md-1 col-xs-3 vcenter">'
             + '<img class="img-thumbnail img-thumbnail-small" '
-            + 'src="' + item.avatar + '"></div>'
+            + 'src="' + item.avatar.substr(1) + '"></div>'
             + '<div class="col-md-3 col-xs-4 vcenter user-id">'
             + item.id + '</div>'
             + '<div class="col-md-2 col-xs-3 vcenter user-login">'

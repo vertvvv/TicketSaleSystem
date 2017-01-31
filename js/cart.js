@@ -116,7 +116,7 @@ function loadCart(data) {
             if (!findRepeat(attr.name)) {
                 $('#ticketsPlace').append('<div class="cart-item container row" data-id="'
                     + attr.id + '"><div class="col-md-4 col-xs-7 cart-item-img vcenter">'
-                    + '<img class="attr-img" src="' + attr.thumbnail + '" alt="attrImage"></div>'
+                    + '<img class="attr-img" src="' + attr.thumbnail.substr(1) + '" alt="attrImage"></div>'
                     + '<div class="col-md-4 col-xs-7 cart-item-info vcenter">'
                     + '<p class="cart-item-name">Attraction: <span>' + attr.name + '</span></p>'
                     + '<p class="cart-item-price">Price: <span>$' + price + '</span></p>'

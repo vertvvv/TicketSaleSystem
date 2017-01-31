@@ -1,10 +1,5 @@
-$(() => {
-    $('.orders-container').each(function() {
-        $(this).css('background-image', 'url(img/attr' + this.id.substr(6) + '.png)');
-    });
-    onLoadFunction();
-    getUserOrders();
-});
+$(onLoadFunction());
+$(getUserOrders());
 
 $('body')
     .on('click', 'header', function () {
@@ -44,7 +39,7 @@ function loadOrdersOnPage(orders) {
         order.tickets.forEach((ticket, i) => {
             const attr = ticket.attraction;
             const price = parseFloat(attr.price).toFixed(2);
-            const code = (ticket.enabled) ? ticket.code : '/img/wrongqr.png';
+            const code = (ticket.enabled) ? ticket.code.substr(1) : 'img/wrongqr.png';
             $('#order' + ordercnt).after('<div id="' + ticket.id + '" class="orders-container container row">'
                 + '<div class="col-md-5 col-xs-5 vcenter">'
                 + '<img class="ticket-image" src="' + code + '" title="QR-Code" alt="QR-Code">'

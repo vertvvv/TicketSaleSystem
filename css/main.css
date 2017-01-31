@@ -177,6 +177,10 @@ body {
     margin-bottom: 20px;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 .test-link {
     cursor: pointer;
 }
@@ -750,10 +754,6 @@ nav {
     text-decoration: underline;
 }
 
-.test-height {
-    min-height: 2000px;
-}
-
 .back-link {
     position: absolute;
     font-size: 1.2em;
@@ -943,7 +943,6 @@ nav {
     background-color: #f0f0f0;
     text-align: center;
     width: 80%;
-    min-height: 500px;
     border-radius: 30px;
     font-weight: 300;
     padding-right: 2%;

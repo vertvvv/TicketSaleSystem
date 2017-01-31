@@ -1,12 +1,17 @@
 const directory = "assets/support/";
 
 $(onLoadFunction());
+$(dialogsQuery());
 
 $('#dialogModal').on('show.bs.modal', function (event) {
     const item = $(event.relatedTarget);
+    const id = item.data('id');
+    $('.modal-message').remove();
+    singleDialogQuery(id);
     const name = item.text();
     const modal = $(this);
     modal.find('.modal-title').text(name);
+    modal.data('id', id);
 });
 
 $('.btn-ft-modal').on('click', function (e) {
@@ -18,28 +23,62 @@ $('.btn-ft-modal').on('click', function (e) {
 $('#dialogMessage').on('keydown', sendOnCtrl);
 $('#newMessage').on('keydown', sendOnCtrl);
 
-$('body')
-    .on('click', '.test-link', function (e) {
-        const questions = $('#questions');
-        const linkText = "with questions";
-        this.text == linkText ? questions.load(directory + "questions_true.html") : questions.load(directory + "questions_false.html");
+function dialogsQuery() {
+    $.ajax({
+        url: server + "api/dialogs?limit=20&" + authorizationString().substr(1),
+        type: 'GET',
+        success: function(json){
+            console.log('woohoo', json);
+            setDialogsContent(json);
+        },
+        error: (e) => errorRefreshFunction(e, dialogsQuery)
     });
-
-function messageSent() {
-    const modalBody = $('#modalBody');
-    modalBody.load(directory + "support_success_message.html");
-    modalBody.siblings('.modal-footer').remove();
-    setTimeout(() => {window.location = 'support.html'}, 1500);
 }
 
-function sendMessage() {
-    const lastMessage = $('.modal-message:last');
-    const dialogMessage = $('#dialogMessage');
-    const tomorrow = new Date(new Date().getTime() + 20 * 60 * 60 * 1000);
-    lastMessage.after('<div class="modal-message modal-question">'
-        + '<img class="img-circle message-img" src="img/identicon8.png" alt="">'
-        + '<p>' + formattedMessage(dialogMessage.val()) + '</p>'
-        + '<span class="message-date">' + tomorrow.getFormattedTime() + '</span>'
-        + '</div>');
-    dialogMessage.val('');
+function putInfoInModal(info) {
+    info.messages.forEach((item) => {
+        const className = (item.type === 'question') ? 'modal-question' : 'modal-answer';
+        $('#modalDialogBody').before('<div class="modal-message ' + className + '">'
+            + '<img class="img-circle message-img" src="' + item.user.avatar.substr(1) + '">'
+            + '<p>' + item.text + '</p>'
+            + '<span class="message-date">' + item.date + '</span></div>');
+    })
+}
+
+function sendNewDialog() {
+    const titleElement = $('#inputName');
+    const title = '?title=' + ((titleElement.val()) ? titleElement.val() : 'No title') + '&' ;
+    const todayDate = (new Date()).getFullFormattedDate();
+    console.log(todayDate);
+    $.postJSON(server + "api/dialogs" + title + authorizationString().substr(1), {
+        date: todayDate,
+        text: $('#newMessage').val(),
+    }, (json) => {
+        console.log('woohoo', json);
+        const modalBody = $('#modalBody');
+        modalBody.load(directory + "support_success_message.html");
+        modalBody.siblings('.modal-footer').remove();
+        setTimeout(() => {window.location = 'support.html'}, 1500);
+    })
+        .error((e) => errorRefreshFunction(e, sendNewDialog));
+}
+
+function setDialogsContent(data) {
+    const questionsPlace = $('#questionsPlace');
+    questionsPlace.append('<ul id="questionsList"></ul>');
+    const list = $('#questionsList');
+    if (data.content.length) {
+        data.content.forEach((item) => {
+            if (!item.closed) {
+                list.append('<li><a data-toggle="modal" data-target="#dialogModal" data-id="'
+                + item.id + '">' + item.title + '</a></li>');
+            }
+        });
+        if (list.is(':empty')) {
+            questionsPlace.append('<span>You have not any questions now.</span>');
+            list.remove();
+        }
+    } else {
+        questionsPlace.append('<span>You have not any questions now.</span>');
+    }
 }
