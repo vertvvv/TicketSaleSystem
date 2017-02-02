@@ -156,13 +156,20 @@ function sendMessage() {
         console.log('woohoo', json);
         const lastMessage = $('.modal-message:last');
         const type = (window.location.href.includes('admin')) ? 'modal-answer' : 'modal-question';
-        const imgpath = json.messages[0].user.avatar.substr(1);
+        const i = json.messages.length - 1;
+        const imgpath = json.messages[i].user.avatar.substr(1);
         lastMessage.after('<div class="modal-message ' + type + '">'
             + '<img class="img-circle message-img" src="' + imgpath + '" alt="">'
             + '<p>' + formattedMessage(dialogMessage.val()) + '</p>'
             + '<span class="message-date">' + todayDate + '</span>'
             + '</div>');
         dialogMessage.val('');
+        if (window.location.href.includes('admin')) {
+            $('.admin-questions').html('');
+            waitingDialogsQuery();
+            $('.admin-answered-questions').html('');
+            openedDialogsQuery();
+        }
     })
         .error((e) => errorRefreshFunction(e, sendMessage));
 }
