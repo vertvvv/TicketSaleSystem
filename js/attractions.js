@@ -16,25 +16,7 @@ $('#maintenanceModal').on('show.bs.modal', function (event) {
     $(this).find('#attrMtnID').val(name);
 });
 
-$('#removeCategory').on('click', function() {
-    categoriesQuery(deleteCategoryOnServer);
-    setTimeout(() => {
-        const currentOption = $(this)
-            .parent().parent()
-            .find('select').find('option:checked');
-        const optionText = currentOption.text();
-        const selects = $('select');
-        selects.each(function (item) {
-            const options = $(this).find('option');
-            options.each(function (option) {
-                if ($(this).text() == optionText) {
-                    $(this).remove();
-                }
-            });
-        });
-
-    }, 200);
-});
+$('#removeCategory').on('click', () =>  categoriesQuery(deleteCategoryOnServer));
 
 $('body')
     .on('click', '.btn-change-attr', function() {
@@ -74,7 +56,14 @@ function addNewAttraction() {
             console.log('woohoo', json);
             window.location = 'admin_attractions.html';
         },
-        error: (e) => errorRefreshFunction(e, addNewAttraction)
+        error: (e) => {
+            const errorText = (JSON.parse(e.responseText).message)
+                ? JSON.parse(e.responseText).message
+                : JSON.parse(e.responseText).error_description;
+            $('#error').html('')
+                       .append('<p class="font-semi-big">' + errorText + '</p>');
+            errorRefreshFunction(e, addNewAttraction);
+        }
     });
 }
 
@@ -116,16 +105,38 @@ function deleteAttraction(element) {
     });
 }
 
+function deleteCategoryFromList() {
+    const currentOption = $('#inputCategoryNew').find('option:checked')
+    const optionText = currentOption.text();
+    const selects = $('select');
+    selects.each(function (item) {
+        const options = $(this).find('option');
+        options.each(function (option) {
+            if ($(this).text() == optionText) {
+                $(this).remove();
+            }
+        });
+    });
+
+}
+
 function deleteCategoryOnServer(data) {
     const result = $.grep(data, (item) => item.name == $('#inputCategoryNew').find('option:checked').text());
-    $.ajax({
-        url: server + "/api/attractions/cat/" + result[0].id + authorizationString(),
-        type: 'DELETE',
-        success: function(json){
-            console.log('woohoo');
-        },
-        error: (e) => errorRefreshFunction(e, deleteCategoryOnServer, data)
-    });
+    if (result.length) {
+        $.ajax({
+            url: server + "/api/attractions/cat/" + result[0].id + authorizationString(),
+            type: 'DELETE',
+            success: function(json){
+                console.log('woohoo');
+                $('#error').html('');
+                deleteCategoryFromList();
+            },
+            error: (e) => errorRefreshFunction(e, deleteCategoryOnServer, data)
+        });
+    } else {
+        $('#error').html('')
+            .append('<p class="font-semi-big">That\'s not a category!</p>');
+    }
 }
 
 function deleteMaintenance(element) {

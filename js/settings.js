@@ -1,16 +1,7 @@
 function getInfoFromToken() {
     const access_token = localStorage.getItem('access_token');
     const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
-    $.get(server + "api/accounts", {
-        access_token: access_token
-    }, setPageInfo)
-        .error((e) => {
-            console.log(e);
-            const errorStr = JSON.parse(e.responseText).error_description;
-            if (errorStr.includes('Invalid access token') || errorStr.includes('Access token expired')) {
-                (keep_flag) ? refreshToken() : logoutFunction();
-            }
-        });
+    cartQuery(setPageInfo);
 }
 
 $(onLoadFunction());
@@ -81,8 +72,9 @@ $('#inputPassword').on('keyup', function () {
     }
 });
 
-function setPageInfo(info) {
-    setProfileMenu(info);
+function setPageInfo(data) {
+    setProfileMenu(data);
+    const info = data.account;
     $('.input-for-load').each((i, item) => {
         const attr = item.id.toLowerCase().substr(5);
         if (info[attr]) {

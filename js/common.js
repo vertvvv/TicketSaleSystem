@@ -66,12 +66,12 @@ function checkIfEmpty(textarea) {
 
 function errorRefreshFunction(e, callback, el = 0, el2 = 0) {
     console.log(e);
-    const errorStr = JSON.parse(e.responseText).error_description;
+    const errorStr = e.responseText;
     const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
-    if (errorStr.includes('Access token expired')) {
+    if (errorStr.includes('token')) {
         (keep_flag) ? refreshToken() : logoutFunction();
+        setTimeout(() => callback(el, el2), 1000);
     }
-    callback(el, el2);
 }
 
 function formattedMessage(mes) {
@@ -95,16 +95,7 @@ function getAccountInfo() {
 function getInfoFromToken() {
     const access_token = localStorage.getItem('access_token');
     const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
-    $.get(server + "api/accounts", {
-        access_token: access_token
-    }, setProfileMenu)
-        .error((e) => {
-            console.log(e);
-            const errorStr = JSON.parse(e.responseText).error_description;
-            if (errorStr.includes('Invalid access token') || errorStr.includes('Access token expired')) {
-                (keep_flag) ? refreshToken() : logoutFunction();
-            }
-        });
+    cartQuery(setProfileMenu);
 }
 
 function logoutFunction() {
@@ -200,25 +191,26 @@ function setAccessToken(info) {
     }
 }
 
-function setProfileInfo(userData) {
+function setProfileInfo(data) {
+    const userData = data.account;
     const name  = (userData.firstname && userData.lastname)
         ? userData.firstname + ' ' + userData.lastname
         : userData.mail;
     $('#namePlace').html('<img class="img-circle avatar-img" src="' + userData.avatar.substr(1)
         + '" alt="">' + name + ' ' + '<span class="caret"></span>');
-    cartQuery((data) => {
-        $('.menu-span').text(data.tickets.length);
-    });
+    $('.menu-span').text(data.tickets.length);
 }
 
-function setProfileMenu(userData) {
-    if (window.location.href.includes('admin') && !userData.admin) {
+function setProfileMenu(cartData) {
+    if (window.location.href.includes('admin') && !cartData.account.admin) {
         $('body').html('<h1 class="text-incorrect-admin">Access denied!<br>Secret info here!</h1>');
         setTimeout(() => window.location = 'index.html', 1500);
     }
-    console.log(userData);
-    const menuFile = index_directory + ((userData.admin) ? "admin_menu_profile.html" : "menu_profile.html");
-    $('#menuPlace').load(menuFile, () => setProfileInfo(userData));
+    if (window.location.href.includes('cart')) {
+        loadCart(cartData);
+    }
+    const menuFile = index_directory + ((cartData.account.admin) ? "admin_menu_profile.html" : "menu_profile.html");
+    $('#menuPlace').load(menuFile, () => setProfileInfo(cartData));
 }
 
 function singleDialogQuery(id) {

@@ -1,15 +1,14 @@
 const tomorrow = new Date(new Date().getTime() + 20 * 60 * 60 * 1000);
-const nextYearTomorrow = new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000);
+const nextDate = new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000);
 const directory = "assets/cart/";
 
 $(onLoadFunction());
-$(cartQuery(loadCart));
-$(setTimeout(() => $('#footer').removeClass('hidden'), 200));
+$(setTimeout(() => $('#footer').removeClass('hidden'), 400));
 
 $('#visitDate')
     .val(tomorrow.getFormattedDate())
     .attr('min', tomorrow.getFormattedDate())
-    .attr('max', nextYearTomorrow.getFormattedDate());
+    .attr('max', nextDate.getFormattedDate());
 
 $('body')
     .on('click', '.close-ticket', function () {
@@ -42,9 +41,7 @@ function addTicketToCart(element) {
 }
 
 function cartEmpty() {
-    const main = $('#display');
-    const testText = "with tickets";
-    main.load(directory + "cart_empty.html");
+    $('#display').load(directory + "cart_empty.html");
     setTimeout(() => checkMenuSum(), 200);
 }
 

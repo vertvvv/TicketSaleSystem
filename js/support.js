@@ -12,6 +12,14 @@ $('#dialogModal').on('show.bs.modal', function (event) {
     const modal = $(this);
     modal.find('.modal-title').text(name);
     modal.data('id', id);
+    $('#dialogMessage').removeClass('hidden');
+    $('.modal-footer').removeClass('hidden');
+    modal.find('.questions-danger-text').remove();
+    if (item.data('closed')) {
+        $('#dialogMessage').addClass('hidden');
+        $('.modal-footer').addClass('hidden');
+        modal.find('.col-md-12').append('<p class="questions-danger-text">Question closed</p>')
+    }
 });
 
 $('.btn-ft-modal').on('click', function (e) {
@@ -69,10 +77,8 @@ function setDialogsContent(data) {
     const list = $('#questionsList');
     if (data.content.length) {
         data.content.forEach((item) => {
-            if (!item.closed) {
-                list.append('<li><a data-toggle="modal" data-target="#dialogModal" data-id="'
-                + item.id + '">' + item.title + '</a></li>');
-            }
+            list.append('<li><a data-toggle="modal" data-target="#dialogModal" data-id="'
+                + item.id + '" data-closed="' + item.closed + '">' + item.title + '</a></li>');
         });
         if (list.is(':empty')) {
             questionsPlace.append('<span>You have not any questions now.</span>');
