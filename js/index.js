@@ -59,9 +59,9 @@ $('body')
         if (!($('.avatar-img').length)) {
             openLoginWindow();
         } else {
-            animatePicture($(this));
             const cnt = parseInt($('#ticket-counter').text(), 10);
             addItemToCart($(this).data('id'), cnt);
+            animatePicture($(this));
         }
         const menuSpan = $('.menu-span');
         const oldCartCount = parseInt(menuSpan.text());

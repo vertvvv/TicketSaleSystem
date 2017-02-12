@@ -71,7 +71,7 @@ function errorRefreshFunction(e, callback, el = 0, el2 = 0) {
     console.log(e);
     const errorStr = e.responseText;
     const keep_flag = !(localStorage.getItem('keep_flag') === 'false');
-    if (errorStr.includes('token')) {
+    if (errorStr.includes(' token')) {
         (keep_flag) ? refreshToken() : logoutFunction();
         setTimeout(() => callback(el, el2), 1000);
     }

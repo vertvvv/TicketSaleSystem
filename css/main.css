@@ -1518,6 +1518,16 @@ button.print-button:hover .print-icon::after {
         display: none;
     }
 }
+@media (min-width: 768px) {
+    .mobile-sup-text {
+        display: none;
+    }
+}
+
+.mobile-sup-text {
+    margin-top: -5%;
+    margin-bottom: 3%;
+}
 
 @media (max-width: 991px) {
     .tablet-no-display {
