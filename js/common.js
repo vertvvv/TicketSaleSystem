@@ -27,6 +27,9 @@ function addItemToCart(id, count = 1) {
         type: 'POST',
         success: function(json){
             console.log('woohoo', json);
+            if (window.location.href.includes('cart')) {
+                totalAmount(json);
+            }
         },
         error: (e) => errorRefreshFunction(e, addItemToCart, id, count)
     });
@@ -131,7 +134,11 @@ function refreshToken() {
         client_secret: 'ticketsale',
         grant_type: 'refresh_token',
         refresh_token: refresh_token
-    }, setAccessToken)
+        }, setAccessToken)
+        .done(function(msg){})
+        .fail(function(xhr, status, error) {
+            logoutFunction();
+        });
 }
 
 function sendMessage() {

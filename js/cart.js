@@ -8,7 +8,16 @@ $(setTimeout(() => $('#footer').removeClass('hidden'), 400));
 $('#visitDate')
     .val(tomorrow.getFormattedDate())
     .attr('min', tomorrow.getFormattedDate())
-    .attr('max', nextDate.getFormattedDate());
+    .attr('max', nextDate.getFormattedDate())
+    .on('change', function() {
+        if ($(this).val() < $(this).attr('min') || $(this).val() > $(this).attr('max')) {
+            $('.btn-pay-now').attr('disabled', 'disabled');
+            $(this).parent().parent().addClass('has-error');
+        } else {
+            $('.btn-pay-now').removeAttr('disabled');
+            $(this).parent().parent().removeClass('has-error');
+        }
+    });
 
 $('body')
     .on('click', '.close-ticket', function () {
@@ -21,15 +30,14 @@ $('body')
             $(this)
                 .removeClass('nonvisible-ticket')
                 .addClass('hidden-ticket');
-            totalAmount();
         });
     })
 
     .on('click', '.btn-pay-now', () => {
         let thisdate = new Date($("#visitDate").val());
         confirmPurchase(thisdate);
-        $("#completeDate").text(thisdate.toLocaleDateString());
-        $("#completeCost").text($("#totalAmount").text());
+        $('#completeDate').text(thisdate.toLocaleDateString());
+        $('#completeCost').text($('#totalAmount').text());
     })
 
     .on('click', '.change-quant', setSumm);
@@ -79,6 +87,7 @@ function deleteItemFromCart(id, count = 1) {
         type: 'DELETE',
         success: function(json){
             console.log('woohoo', json);
+            totalAmount(json);
         },
         error: (e) => errorRefreshFunction(e, deleteItemFromCart, id, count)
     });
@@ -128,7 +137,7 @@ function loadCart(data) {
                     + '</span></button></div></div>');
             }
         });
-        totalAmount();
+        totalAmount(data);
     } else {
         cartEmpty();
     }
@@ -154,22 +163,13 @@ function setSumm() {
 
     quantity.text(ticketCounter);
     sumPrice.text((ticketCounter*parseFloat(sumPrice.data('price'))).toFixed(2));
-    totalAmount();
 }
 
-function totalAmount() {
-    let totalCost = 0;
-    $('.cart-item').each(function() {
-        const ticket = $(this).find('[data-price]');
-        const ticketPrice = ticket.text();
-        if (!($(this).hasClass('hidden-ticket'))) {
-            totalCost += parseFloat(ticketPrice);
-        }
-    });
-    if (totalCost == 0) {
+function totalAmount(data) {
+    if (data.total == 0) {
         cartEmpty();
     } else {
-        $("#totalAmount").text(totalCost.toFixed(2));
+        $('#totalAmount').text(data.total.toFixed(2));
     }
     checkMenuSum();
 }
