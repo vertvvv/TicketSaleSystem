@@ -20,8 +20,20 @@ $('#attractionModal').on('show.bs.modal', function (event) {
     $('#attrCategory').attr('data-content', attractionData.catdescription);
     $('#price').data('price', attractionData.price).text(parseFloat(attractionData.price).toFixed(2));
     $('#ticket-counter').text('1');
-    $('#attrid').attr('src', attractionData.image);
     $('.btn-footer-buy').data('id', attractionData.id);
+    const img = $('#attrid');
+    img.attr('src', attractionData.image);
+    $('#imgClone').remove();
+    setTimeout(() => {
+        const imgClone = img.clone()
+            .attr('id', 'imgClone')
+            .offset({
+                top: img.offset().top,
+                left: img.offset().left
+            })
+            .addClass('image-transition hidden')
+            .appendTo($('body'));
+    }, 400)
 });
 
 $('body')
@@ -76,7 +88,7 @@ $(function () {
     } else {
         $('#menuPlace').load(directory + "menu_login.html");
     }
-    if (document.referrer.includes('localhost') && !access_token) {
+    if ((document.referrer.includes('localhost') || document.referrer.includes('ticketsale')) && !access_token) {
         $('#loginBody').load(directory + "login.html");
         $('#openModal').modal('show');
     }
@@ -86,22 +98,16 @@ $(function () {
 function animatePicture(btn) {
     if ($(window).width() >= 992){
         $('#attractionModal').modal('hide');
-        const img = $(btn).parent().parent().find('img');
+        const imgClone = $('#imgClone');
         const avatar = $('.avatar-img');
-        const imgClone = img.clone()
-            .offset({
-                top: img.offset().top,
-                left: img.offset().left
-            })
-            .addClass('image-transition')
-            .appendTo($('body'))
-            .animate({
+        imgClone.removeClass('hidden');
+        imgClone.animate({
                 'top': avatar.offset().top + 15,
                 'left': avatar.offset().left + 15,
-                'width': 75,
-                'height': 75
-            }, 1000);
-        imgClone.animate({
+                'width': 100,
+                'height': 100
+            }, 1000)
+            .animate({
             'width': 0,
             'height': 0
         }, function () {
@@ -163,11 +169,18 @@ function checkMaintenance(box) {
 }
 
 function checkPasswords(login, pass1, pass2) {
-    const inspect = (pass1.val() == pass2.val());
-    if (inspect) {
+    const validCheck = (pass1.val() == pass2.val());
+    const lengthCheck = (pass1.val().length < 6 || pass1.val().length > 20);
+    if (validCheck && lengthCheck) {
         signUpUser(login, pass1);
+        if (lengthCheck) {
+            setPasswordException('Password length: 6-20 symbols');
+            pass1.val('');
+            pass2.val('');
+        } else {
+        }
     } else {
-        $('.log-in-htm').after('<p class="text-warning incorrect-email-text incorrect-pass-confirm">Incorrect password confirmation</p>');
+        setPasswordException('Incorrect password confirmation');
         pass1.val('');
         pass2.val('');
     }
@@ -240,6 +253,11 @@ function openLoginWindow() {
     $('#attractionModal').modal('hide');
     $('#loginBody').load(directory + "login.html");
     $('#openModal').modal('show');
+}
+
+function setPasswordException(exceptionText) {
+    $('.log-in-htm').after('<p class="text-warning incorrect-email-text incorrect-pass-confirm">' + exceptionText + '</p>');
+
 }
 
 function signUpUser(login, pass) {

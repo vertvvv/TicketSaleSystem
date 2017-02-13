@@ -6,44 +6,15 @@ function getInfoFromToken() {
 
 $(onLoadFunction());
 
-$('#changeButton').on('click', function () {
-    const passField = $('#inputPassword');
-    const passParent = passField.parent().parent();
-    if (!passField.val() || passParent.hasClass('has-success')) {
-        let sendData = {
-        };
-        if (passParent.hasClass('has-success')) {
-            sendData.password = md5(passField.val());
-        }
-        $('.input-for-load').each((i, item) => {
-            const attr = item.id.toLowerCase().substr(5);
-            const value = $(item).val();
-            if (value) {
-                sendData[attr] = value;
-            }
-        });
-        const access_token = localStorage.getItem('access_token');
-        const authorization_string = 'Bearer ' + access_token;
-        $.ajax({
-            url: server + "api/accounts",
-            headers: {
-                'Authorization': authorization_string,
-                'Content-Type': 'application/json'
-            },
-            type: 'PUT',
-            data: JSON.stringify(sendData),
-            dataType: 'json',
-            success: function(data) {
-                window.location = 'settings.html';
-            }
-        });
-        console.log(sendData);
+$('#changeButton').on('click', passwordValidation);
+
+$('#inputBirthDate').on('change', function() {
+    if ($(this).val() < $(this).attr('min') || $(this).val() > $(this).attr('max')) {
+        $('#changeButton').attr('disabled', 'disabled');
+        $(this).parent().parent().addClass('has-error');
     } else {
-        passField.val('');
-        $('.text-delete').remove();
-        $(this).before('<p class="text-warning text-center text-delete">Invalid password confirmation!</p>');
-        $('#inputPasswordConfirm').val('')
-            .parent().parent().removeClass('has-error');
+        $('#changeButton').removeAttr('disabled');
+        $(this).parent().parent().removeClass('has-error');
     }
 });
 
@@ -71,6 +42,55 @@ $('#inputPassword').on('keyup', function () {
         $('#inputPasswordConfirm').parent().parent().removeClass('has-error');
     }
 });
+
+function passwordValidation() {
+    const passField = $('#inputPassword');
+    const passParent = passField.parent().parent();
+    if (!passField.val() || passParent.hasClass('has-success')) {
+        sendDataToServer();
+    } else {
+        passField.val('');
+        $('.text-delete').remove();
+        $('#changeButton').before('<p class="text-warning text-center text-delete">Invalid password confirmation!</p>');
+        $('#inputPasswordConfirm').val('')
+            .parent().parent().removeClass('has-error');
+    }
+}
+
+function sendDataToServer(sendData = setDataToSend()) {
+    const access_token = localStorage.getItem('access_token');
+    const authorization_string = 'Bearer ' + access_token;
+    $.ajax({
+        url: server + "api/accounts",
+        headers: {
+            'Authorization': authorization_string,
+            'Content-Type': 'application/json'
+        },
+        type: 'PUT',
+        data: JSON.stringify(sendData),
+        dataType: 'json',
+        success: function(data) {
+            window.location = 'settings.html';
+        }
+    });
+}
+
+function setDataToSend() {
+    let sendData = {};
+    const passField = $('#inputPassword');
+    const passParent = passField.parent().parent();
+    if (passParent.hasClass('has-success')) {
+        sendData.password = md5(passField.val());
+    }
+    $('.input-for-load').each((i, item) => {
+        const attr = item.id.toLowerCase().substr(5);
+        const value = $(item).val();
+        if (value) {
+            sendData[attr] = value;
+        }
+    });
+    return sendData;
+}
 
 function setPageInfo(data) {
     setProfileMenu(data);

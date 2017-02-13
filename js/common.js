@@ -29,6 +29,7 @@ function addItemToCart(id, count = 1) {
             console.log('woohoo', json);
             if (window.location.href.includes('cart')) {
                 totalAmount(json);
+                countItemAmount();
             }
         },
         error: (e) => errorRefreshFunction(e, addItemToCart, id, count)
@@ -200,12 +201,18 @@ function setAccessToken(info) {
 
 function setProfileInfo(data) {
     const userData = data.account;
-    const name  = (userData.firstname && userData.lastname)
-        ? userData.firstname + ' ' + userData.lastname
-        : userData.mail;
+    let fullName = userData.mail;
+    const firstName = userData.firstname;
+    const lastName = userData.lastname;
+    if (firstName && lastName) {
+        fullName = firstName + ' ' + lastName;
+    } else if (firstName || lastName) {
+        fullName = (firstName) ? firstName : lastName;
+    }
     $('#namePlace').html('<img class="img-circle avatar-img" src="' + userData.avatar.substr(1)
-        + '" alt="">' + name + ' ' + '<span class="caret"></span>');
-    $('.menu-span').text(data.tickets.length);
+        + '" alt="">' + fullName + ' ' + '<span class="caret"></span>');
+    const ticketsCounter = (data.tickets) ? data.tickets.length : '0';
+    $('.menu-span').text(ticketsCounter);
 }
 
 function setProfileMenu(cartData) {

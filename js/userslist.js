@@ -65,10 +65,14 @@ function loadUsers(data) {
     const accounts = data.content;
     accounts.forEach((item) => {
         const status = (item.enabled) ? (item.admin) ? 'Admin' : 'Active' : 'Banned';
-        const name = (item.firstname) ? item.firstname : 'Name';
-        const surname = (item.lastname) ? item.lastname : 'Surname';
-        const fullName = (name + surname === 'NameSurname')
-            ? 'Not indicated' : name + ' ' + surname;
+        let fullName = 'Not indicated';
+        const firstName = item.firstname;
+        const lastName = item.lastname;
+        if (firstName && lastName) {
+            fullName = firstName + ' ' + lastName;
+        } else if (firstName || lastName) {
+            fullName = (firstName) ? firstName : lastName;
+        }
         const disabled = (item.admin) ? 'disabled' : '';
         const banButton = (item.enabled) ? ' btn-danger" ' + disabled + '>Ban' : ' btn-default" ' + disabled + '>Unban';
         $('#loadInfo').after('<div class="user-container row">'

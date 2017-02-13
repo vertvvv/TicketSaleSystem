@@ -18,7 +18,7 @@ $('#dialogModal').on('show.bs.modal', function (event) {
     if (item.data('closed')) {
         $('#dialogMessage').addClass('hidden');
         $('.modal-footer').addClass('hidden');
-        modal.find('.col-md-12').append('<p class="questions-danger-text">Question closed</p>')
+        modal.find('.col-md-12').append('<p class="questions-danger-text">Dialog is closed</p>')
     }
 });
 

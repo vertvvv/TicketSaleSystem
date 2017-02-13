@@ -75,6 +75,23 @@ function confirmPurchase(date) {
     });
 }
 
+function countItemAmount() {
+    const ticketBody = currentTicket.parent().parent().parent();
+    const quantity = ticketBody.find('.ticket-counter');
+    const sumPrice = ticketBody.find('[data-price]');
+    let ticketCounter = parseInt(quantity.text(), 10);
+    const how = currentTicket.data('how');
+
+    if (how === 'down') {
+        (ticketCounter > 1) ? ticketCounter -= 1 : ticketCounter = 1;
+    } else if (how === 'up') {
+        ticketCounter += 1;
+    } else ticketCounter = 1;
+
+    quantity.text(ticketCounter);
+    sumPrice.text((ticketCounter*parseFloat(sumPrice.data('price'))).toFixed(2));
+}
+
 function deleteItemFromCart(id, count = 1) {
     const data = makeTicketsArray(id, count);
     $.ajax({
@@ -88,6 +105,7 @@ function deleteItemFromCart(id, count = 1) {
         success: function(json){
             console.log('woohoo', json);
             totalAmount(json);
+            countItemAmount();
         },
         error: (e) => errorRefreshFunction(e, deleteItemFromCart, id, count)
     });
@@ -149,20 +167,7 @@ function setSumm() {
     } else if ($(this).hasClass('glyphicon-minus') && (parseInt($(this).siblings('.ticket-counter').text(), 10) > 1)){
         deleteTicketFromCart(this);
     }
-    const ticketBody = $(this).parent().parent().parent();
-    const quantity = ticketBody.find('.ticket-counter');
-    const sumPrice = ticketBody.find('[data-price]');
-    let ticketCounter = parseInt(quantity.text(), 10);
-    const how = $(this).data('how');
-
-    if (how === 'down') {
-        (ticketCounter > 1) ? ticketCounter -= 1 : ticketCounter = 1;
-    } else if (how === 'up') {
-        ticketCounter += 1;
-    } else ticketCounter = 1;
-
-    quantity.text(ticketCounter);
-    sumPrice.text((ticketCounter*parseFloat(sumPrice.data('price'))).toFixed(2));
+    window.currentTicket = $(this);
 }
 
 function totalAmount(data) {
