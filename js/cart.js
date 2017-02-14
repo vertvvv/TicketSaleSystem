@@ -24,6 +24,7 @@ $('body')
         const ticket = $(this).parent().parent();
         const id = ticket.data('id');
         const count = parseInt(ticket.find('.ticket-counter').text(), 10);
+        window.currentTicket = false;
         deleteItemFromCart(id, count);
         ticket.addClass('nonvisible-ticket');
         ticket.delay(1000).queue(function() {
@@ -76,20 +77,22 @@ function confirmPurchase(date) {
 }
 
 function countItemAmount() {
-    const ticketBody = currentTicket.parent().parent().parent();
-    const quantity = ticketBody.find('.ticket-counter');
-    const sumPrice = ticketBody.find('[data-price]');
-    let ticketCounter = parseInt(quantity.text(), 10);
-    const how = currentTicket.data('how');
+    if (window.currentTicket) {
+        const ticketBody = currentTicket.parent().parent().parent();
+        const quantity = ticketBody.find('.ticket-counter');
+        const sumPrice = ticketBody.find('[data-price]');
+        let ticketCounter = parseInt(quantity.text(), 10);
+        const how = currentTicket.data('how');
 
-    if (how === 'down') {
-        (ticketCounter > 1) ? ticketCounter -= 1 : ticketCounter = 1;
-    } else if (how === 'up') {
-        ticketCounter += 1;
-    } else ticketCounter = 1;
+        if (how === 'down') {
+            (ticketCounter > 1) ? ticketCounter -= 1 : ticketCounter = 1;
+        } else if (how === 'up') {
+            ticketCounter += 1;
+        } else ticketCounter = 1;
 
-    quantity.text(ticketCounter);
-    sumPrice.text((ticketCounter*parseFloat(sumPrice.data('price'))).toFixed(2));
+        quantity.text(ticketCounter);
+        sumPrice.text((ticketCounter*parseFloat(sumPrice.data('price'))).toFixed(2));
+    }
 }
 
 function deleteItemFromCart(id, count = 1) {
@@ -162,12 +165,12 @@ function loadCart(data) {
 }
 
 function setSumm() {
+    window.currentTicket = $(this);
     if ($(this).hasClass('glyphicon-plus')) {
         addTicketToCart(this);
     } else if ($(this).hasClass('glyphicon-minus') && (parseInt($(this).siblings('.ticket-counter').text(), 10) > 1)){
         deleteTicketFromCart(this);
     }
-    window.currentTicket = $(this);
 }
 
 function totalAmount(data) {
