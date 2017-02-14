@@ -91,6 +91,14 @@ $(function () {
     if ((document.referrer.includes('localhost') || document.referrer.includes('ticketsale')) && !access_token) {
         $('#loginBody').load(directory + "login.html");
         $('#openModal').modal('show');
+        if (document.referrer.includes('activateid')) {
+            setTimeout(() => {
+                console.log($('#logInButton'))
+                $('#logInButton').after('<p class="text-center text-success font-semi-big" style="margin-top: 60px;">Email confirmed!</p>');
+                $('.hr').remove();
+                $('.foot-lnk').remove();
+            }, 800);
+        }
     }
     attractionsQuery();
 });
@@ -170,14 +178,14 @@ function checkMaintenance(box) {
 
 function checkPasswords(login, pass1, pass2) {
     const validCheck = (pass1.val() == pass2.val());
-    const lengthCheck = (pass1.val().length < 6 || pass1.val().length > 20);
-    if (validCheck && lengthCheck) {
-        signUpUser(login, pass1);
+    const lengthCheck = (pass1.val().length > 5 && pass1.val().length < 21);
+    if (validCheck) {
         if (lengthCheck) {
+            signUpUser(login, pass1);
+        } else {
             setPasswordException('Password length: 6-20 symbols');
             pass1.val('');
             pass2.val('');
-        } else {
         }
     } else {
         setPasswordException('Incorrect password confirmation');
@@ -194,9 +202,9 @@ function forgotEmailCheck() {
     const input = $('#emailForgot');
     if (!input.val().isEmptyString()) {
         if (input.val().isTrueEmail()) {
-            $('.login-form').html('<p class="check-email-text">Message sent!<br>Check your E-Mail.</p>');
+            newPasswordQuery(input.val());
         } else {
-            $('#forgot-text').after('<p class="text-warning"><br>Incorrect Email address!</p>')
+            throwWrongEmailException('Incorrect Email address!');
         }
     } else {
         input.attr('placeholder', 'Write your E-Mail!');
@@ -249,6 +257,26 @@ function loginUser(input, pass) {
         });
 }
 
+function newPasswordQuery(email) {
+    const mailString='?mail=' + email;
+    $.ajax({
+        url: server + "api/accounts/newpass" + mailString,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        data: {},
+        type: 'GET',
+        success: function(json){
+            console.log('woohoo', json);
+            $('.login-form').html('<p class="check-email-text">Message sent!<br>Check your E-Mail.</p>');
+        },
+        error: (e) => {
+            throwWrongEmailException(e.responseText['error_description']);
+        }
+    });
+}
+
 function openLoginWindow() {
     $('#attractionModal').modal('hide');
     $('#loginBody').load(directory + "login.html");
@@ -257,7 +285,11 @@ function openLoginWindow() {
 
 function setPasswordException(exceptionText) {
     $('.log-in-htm').after('<p class="text-warning incorrect-email-text incorrect-pass-confirm">' + exceptionText + '</p>');
+}
 
+function signUpSuccessMessage() {
+    $('#loginBody').html('<a href="#" class="close-new" data-dismiss="modal" aria-label="Close"><span>&times;</span></a>'
+        + '<p class="sign-up-success-text text-center">Confirmation message sent!<br>Check your E-Mail.</p>');
 }
 
 function signUpUser(login, pass) {
@@ -265,7 +297,7 @@ function signUpUser(login, pass) {
         mail: $(login).val(),
         password: md5(pass.val())
     }, (info) => {
-        loginUser(login, pass);
+        signUpSuccessMessage();
     })
         .error(function(e) {
             throwPasswordException(login, pass, e);
@@ -280,4 +312,9 @@ function throwPasswordException(input, pass, e=0) {
     pass.val('');
     $('#confirmPassSignUp').val('');
     input.attr('placeholder', '');
+}
+
+function throwWrongEmailException(message = 'Error!') {
+    $('#emailForgot').find('text-warning').remove();
+    $('#forgot-text').after('<p class="text-warning"><br>' + message + '</p>')
 }

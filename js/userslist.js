@@ -62,41 +62,45 @@ function filterUsers() {
 }
 
 function loadUsers(data) {
+    console.log(data);
     const accounts = data.content;
     accounts.forEach((item) => {
-        const status = (item.enabled) ? (item.admin) ? 'Admin' : 'Active' : 'Banned';
-        let fullName = 'Not indicated';
-        const firstName = item.firstname;
-        const lastName = item.lastname;
-        if (firstName && lastName) {
-            fullName = firstName + ' ' + lastName;
-        } else if (firstName || lastName) {
-            fullName = (firstName) ? firstName : lastName;
+        if (item.activated) {
+            const status = (item.enabled) ? (item.admin) ? 'Admin' : 'Active' : 'Banned';
+            let fullName = 'Not indicated';
+            const firstName = item.firstname;
+            const lastName = item.lastname;
+            if (firstName && lastName) {
+                fullName = firstName + ' ' + lastName;
+            } else if (firstName || lastName) {
+                fullName = (firstName) ? firstName : lastName;
+            }
+            const disabled = (item.admin) ? 'disabled' : '';
+            const banButton = (item.enabled) ? ' btn-danger" ' + disabled + '>Ban' : ' btn-default" ' + disabled + '>Unban';
+            $('#loadInfo').after('<div class="user-container row">'
+                + '<div class="col-md-1 col-xs-3 vcenter">'
+                + '<img class="img-thumbnail img-thumbnail-small" '
+                + 'src="' + item.avatar.substr(1) + '"></div>'
+                + '<div class="col-md-3 col-xs-4 vcenter user-id">'
+                + item.id + '</div>'
+                + '<div class="col-md-2 col-xs-3 vcenter user-login">'
+                + item.mail + '</div>'
+                + '<div class="col-md-2 col-xs-3 vcenter user-name">'
+                + fullName + '</div>'
+                + '<div class="col-md-2 col-xs-4 vcenter user-status">'
+                + status + '</div>'
+                + '<div class="col-md-1 col-xs-3 user-ban vcenter">'
+                + '<button class="btn btn-block ban-button'
+                + banButton + '</button></div></div>');
         }
-        const disabled = (item.admin) ? 'disabled' : '';
-        const banButton = (item.enabled) ? ' btn-danger" ' + disabled + '>Ban' : ' btn-default" ' + disabled + '>Unban';
-        $('#loadInfo').after('<div class="user-container row">'
-            + '<div class="col-md-1 col-xs-3 vcenter">'
-            + '<img class="img-thumbnail img-thumbnail-small" '
-            + 'src="' + item.avatar.substr(1) + '"></div>'
-            + '<div class="col-md-3 col-xs-4 vcenter user-id">'
-            + item.id + '</div>'
-            + '<div class="col-md-2 col-xs-3 vcenter user-login">'
-            + item.mail + '</div>'
-            + '<div class="col-md-2 col-xs-3 vcenter user-name">'
-            + fullName + '</div>'
-            + '<div class="col-md-2 col-xs-4 vcenter user-status">'
-            + status + '</div>'
-            + '<div class="col-md-1 col-xs-3 user-ban vcenter">'
-            + '<button class="btn btn-block ban-button'
-            + banButton + '</button></div></div>');
     });
 }
 
 function usersQuery() {
     let access_token = localStorage.getItem('access_token');
     $.get(server + "api/accounts/all", {
-        access_token: access_token
+        access_token: access_token,
+        limit: 1000
     }, loadUsers)
         .error(() => setTimeout(() => usersQuery(), 200));
 }

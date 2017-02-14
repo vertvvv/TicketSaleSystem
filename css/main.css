@@ -527,6 +527,12 @@ nav {
     line-height: 25px !important;
 }
 
+.sign-up-success-text {
+    margin-top: 175px;
+    line-height: 25px !important;
+    font-size: 1.2em;
+}
+
 .incorrect-email-text {
     padding-top: 32px;
 }
@@ -607,12 +613,12 @@ nav {
 .login-html .log-in,
 .login-html .sign-up,
 .login-form .check{
-    display:none;
+    display: none;
 }
 
 .login-html .tab,
 .login-form label{
-    text-transform:uppercase;
+    text-transform: uppercase;
 }
 
 .login-html .tab{

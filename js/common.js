@@ -51,6 +51,9 @@ function cartQuery(callback) {
         type: 'GET',
         success: function(json){
             console.log('woohoo', json);
+            if (!json.account.enabled) {
+                logoutFunction();
+            }
             callback(json);
         },
         error: (e) => errorRefreshFunction(e, cartQuery, callback)
