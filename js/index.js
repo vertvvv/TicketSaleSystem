@@ -91,17 +91,23 @@ $(function () {
     if ((document.referrer.includes('localhost') || document.referrer.includes('ticketsale')) && !access_token) {
         $('#loginBody').load(directory + "login.html");
         $('#openModal').modal('show');
-        if (document.referrer.includes('activateid')) {
-            setTimeout(() => {
-                console.log($('#logInButton'))
-                $('#logInButton').after('<p class="text-center text-success font-semi-big" style="margin-top: 60px;">Email confirmed!</p>');
-                $('.hr').remove();
-                $('.foot-lnk').remove();
-            }, 800);
-        }
+        activationMessage('activateid', 'success', 'Email confirmed!');
+        activationMessage('wrongactivationlink', 'danger', 'Wrong activation link!');
     }
     attractionsQuery();
 });
+
+function activationMessage(url, className, message) {
+    const timeout = 800;
+    if (document.referrer.includes(url)) {
+        setTimeout(() => {
+            $('#logInButton').after('<p class="text-center text-' + className
+                + ' font-semi-big" style="margin-top: 60px;">' + message + '</p>');
+            $('.hr').remove();
+            $('.foot-lnk').remove();
+        }, timeout);
+    }
+}
 
 function animatePicture(btn) {
     if ($(window).width() >= 992){

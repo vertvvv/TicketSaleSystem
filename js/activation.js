@@ -21,6 +21,8 @@ $(function () {
         },
         error: (e) => {
             console.log(e);
+            window.history.replaceState('page', '', 'wrongactivationlink');
+            window.location = 'index.html';
         }
     });
 });
