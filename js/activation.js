@@ -15,7 +15,7 @@ $(function () {
         },
         data: {},
         type: 'GET',
-        success: function(json){
+        success: function (json) {
             console.log('woohoo', json);
             window.location = 'index.html';
         },

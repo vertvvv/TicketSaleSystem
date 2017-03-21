@@ -12,7 +12,7 @@ $('#dialogModal')
         const modal = $(this);
         modal.find('.modal-title').text(name);
         modal.data('id', id);
-})
+    })
     .on('keydown', sendOnCtrl);
 
 $('.btn-ft-modal').on('click', () => checkIfEmpty($('#dialogMessage')));
@@ -28,7 +28,7 @@ function deleteDialog(element) {
     $.ajax({
         url: server + "api/dialogs/" + id + '?closed=true&' + authorizationString().substr(1),
         type: 'PUT',
-        success: function(json){
+        success: function (json) {
             console.log('woohoo', json);
             element.remove();
         },
@@ -40,7 +40,7 @@ function openedDialogsQuery() {
     $.ajax({
         url: server + "api/dialogs/open" + authorizationString(),
         type: 'GET',
-        success: function(json){
+        success: function (json) {
             console.log('woohoo', json);
             setDialogsOnPage(json, true);
         },
@@ -96,7 +96,7 @@ function waitingDialogsQuery() {
     $.ajax({
         url: server + "api/dialogs/waiting" + authorizationString(),
         type: 'GET',
-        success: function(json){
+        success: function (json) {
             console.log('woohoo', json);
             setDialogsOnPage(json);
         },
