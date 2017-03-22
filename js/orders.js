@@ -36,27 +36,31 @@ function loadOrdersOnPage(orders) {
             .forEach((order, ordercnt) => {
                 $('#ordersPlace').append(
                     `<div class="for-print">
-                    <div class="order-outer">
-                        <header id="order${ordercnt}" class="order-header">
-                            <div class="col-md-6 col-xs-12 vcenter">
-                                <p class="order-info">ID: ${order.id.substr(0, 6)}</p>
-                                <p class="order-info">Total: $${order.total}</p>
-                                <p class="order-info">Visit date: ${order.visitdate}</p>
-                            </div>
-                            <div class="col-md-5 vcenter text-right">
-                                <button class="print-button">
-                                    <span class="print-icon"></span>
-                                </button>
-                            </div>
-                        </header>
-                    </div>
-                </div>`
+                        <div class="order-outer">
+                            <header id="order${ordercnt}" class="order-header">
+                                <div class="col-md-6 col-xs-12 vcenter">
+                                    <p class="order-info">ID: ${order.id.substr(0, 6)}</p>
+                                    <p class="order-info">Total: $${order.total}</p>
+                                    <p class="order-info">Visit date: ${order.visitdate}</p>
+                                </div>
+                                <div class="col-md-5 vcenter text-right">
+                                    <button class="print-button">
+                                        <span class="print-icon"></span>
+                                    </button>
+                                </div>
+                            </header>
+                        </div>
+                    </div>`
                 );
                 order.tickets.sort((a, b) => a.attraction.name < b.attraction.name)
                     .forEach((ticket, i) => {
                         const attr = ticket.attraction;
                         const price = parseFloat(attr.price).toFixed(2);
                         const code = (ticket.enabled) ? ticket.code.substr(1) : 'img/wrongqr.png';
+
+                        if (ticket.brokenAttraction && !$('#warningTextOrders').length) {
+                            $('#ordersPlace').prepend(`<p id="warningTextOrders" class="text-warning-orders text-danger">Warning! Attraction ${attr.name} is not working now! You can get your money back in our park. Thanks for understanding!</p>`);
+                        }
 
                         $('#order' + ordercnt).after(
                             `<div id="${ticket.id}" class="orders-container container row">

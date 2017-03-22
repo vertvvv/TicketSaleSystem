@@ -1796,3 +1796,10 @@ textarea {
 .questions-support-list > li:last-of-type {
     margin-bottom: 10px;
 }
+
+.text-warning-orders {
+    text-align: center;
+    font-size: 1.1em;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
